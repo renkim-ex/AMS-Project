@@ -3,298 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>자산관리시스템 — AMS</title>
+<title>자산관리시스템</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0e0f14;
-  --surface: #161820;
-  --surface2: #1e2028;
-  --surface3: #252730;
-  --border: #2e3040;
-  --border2: #3a3d52;
-  --accent: #6c63ff;
-  --accent2: #8b85ff;
-  --accent-dim: rgba(108,99,255,0.15);
-  --text: #e8eaf2;
-  --text2: #9da3bf;
-  --text3: #5c6280;
-  --green: #3ecf8e;
-  --green-dim: rgba(62,207,142,0.12);
-  --amber: #f5a623;
-  --amber-dim: rgba(245,166,35,0.12);
-  --red: #ef4444;
-  --red-dim: rgba(239,68,68,0.12);
-  --blue: #60a5fa;
-  --blue-dim: rgba(96,165,250,0.12);
-  --viewer: #f59e0b;
-  --viewer-dim: rgba(245,158,11,0.13);
-  --radius: 10px;
-  --radius-sm: 6px;
-  --font: 'Noto Sans KR', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  --bg:#0e0f14; --surface:#161820; --surface2:#1e2028; --surface3:#252730;
+  --border:#2e3040; --border2:#3a3d52;
+  --accent:#6c63ff; --accent2:#8b85ff; --accent-dim:rgba(108,99,255,0.15);
+  --text:#e8eaf2; --text2:#9da3bf; --text3:#5c6280;
+  --green:#3ecf8e; --green-dim:rgba(62,207,142,0.12);
+  --amber:#f5a623; --amber-dim:rgba(245,166,35,0.12);
+  --red:#ef4444; --red-dim:rgba(239,68,68,0.12);
+  --blue:#60a5fa; --blue-dim:rgba(96,165,250,0.12);
+  --radius:10px; --radius-sm:6px;
+  --font:'Noto Sans KR',sans-serif; --mono:'JetBrains Mono',monospace;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; overflow:hidden; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden;}
 
-/* ═══ LOGIN ═══ */
-#login-screen {
-  display:flex; align-items:center; justify-content:center;
-  min-height:100vh; position:relative; overflow:hidden;
-}
-.login-bg { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-.login-bg-dot { position:absolute; border-radius:50%; }
-.login-card {
-  position:relative; z-index:1;
-  background:var(--surface); border:1px solid var(--border2); border-radius:16px;
-  width:400px; box-shadow:0 32px 80px rgba(0,0,0,0.5); overflow:hidden;
-  animation:card-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;
-}
-@keyframes card-in { from{opacity:0;transform:translateY(24px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-.login-header {
-  padding:32px 32px 24px; border-bottom:1px solid var(--border);
-  background:linear-gradient(135deg, rgba(108,99,255,0.08) 0%, transparent 60%);
-}
-.login-logo-mark { font-family:var(--mono); font-size:10px; font-weight:500; color:var(--accent2); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
-.login-title { font-size:20px; font-weight:600; color:var(--text); margin-bottom:4px; }
-.login-sub { font-size:13px; color:var(--text3); }
-.login-body { padding:28px 32px 32px; }
-.login-form-group { margin-bottom:16px; }
-.login-label { display:block; font-size:12px; font-weight:500; color:var(--text3); margin-bottom:7px; }
-.login-input {
-  width:100%; padding:10px 14px;
-  background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm);
-  color:var(--text); font-size:14px; font-family:var(--font); outline:none; transition:border-color 0.15s,box-shadow 0.15s;
-}
-.login-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(108,99,255,0.15); }
-.login-input::placeholder { color:var(--text3); }
-.login-btn {
-  width:100%; padding:11px; margin-top:6px;
-  background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm);
-  font-size:14px; font-weight:600; font-family:var(--font); cursor:pointer; transition:background 0.15s;
-}
-.login-btn:hover { background:var(--accent2); }
-.login-error {
-  margin-top:12px; padding:10px 14px;
-  background:var(--red-dim); border:1px solid rgba(239,68,68,0.2);
-  border-radius:var(--radius-sm); font-size:13px; color:var(--red); display:none;
-}
-.login-error.show { display:block; animation:shake 0.3s ease; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-.login-accounts {
-  margin-top:20px; padding:14px;
-  background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm);
-}
-.login-accounts-title { font-size:11px; color:var(--text3); font-weight:500; margin-bottom:10px; letter-spacing:0.05em; text-transform:uppercase; }
-.login-account-row {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px 6px; border-bottom:1px solid var(--border); cursor:pointer;
-  border-radius:6px; transition:background 0.12s;
-}
-.login-account-row:last-child { border-bottom:none; padding-bottom:0; }
-.login-account-row:hover { background:var(--surface3); }
-.login-account-info { display:flex; align-items:center; gap:10px; }
-.login-account-avatar { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; }
-.avatar-admin { background:var(--accent-dim); color:var(--accent2); }
-.avatar-viewer { background:var(--viewer-dim); color:var(--viewer); }
-.login-account-name { font-size:13px; color:var(--text2); font-weight:500; }
-.login-account-email { font-size:11px; color:var(--text3); margin-top:1px; }
-.login-account-role { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
-.role-admin { background:var(--accent-dim); color:var(--accent2); }
-.role-viewer { background:var(--viewer-dim); color:var(--viewer); }
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden;}
+.login-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.login-bg-dot{position:absolute;border-radius:50%;}
+.login-card{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:400px;box-shadow:0 32px 80px rgba(0,0,0,0.5);overflow:hidden;animation:card-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
+@keyframes card-in{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-header{padding:32px 32px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(108,99,255,0.08) 0%,transparent 60%);}
+.login-logo-mark{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--accent2);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;}
+.login-title{font-size:20px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--text3);}
+.login-body{padding:28px 32px 32px;}
+.login-form-group{margin-bottom:16px;}
+.login-label{display:block;font-size:12px;font-weight:500;color:var(--text3);margin-bottom:7px;}
+.login-input{width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+.login-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.15);}
+.login-input::placeholder{color:var(--text3);}
+.login-btn{width:100%;padding:11px;margin-top:6px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:background 0.15s;}
+.login-btn:hover{background:var(--accent2);}
+.login-error{margin-top:12px;padding:10px 14px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-sm);font-size:13px;color:var(--red);display:none;}
+.login-error.show{display:block;animation:shake 0.3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-/* ═══ APP ═══ */
-#app { display:none; height:100vh; }
-#app.visible { display:flex; }
+/* APP */
+#app{display:none;height:100vh;}
+#app.visible{display:flex;}
 
-.sidebar {
-  width:220px; background:var(--surface); border-right:1px solid var(--border);
-  display:flex; flex-direction:column; flex-shrink:0; height:100vh;
-}
-.logo { padding:22px 20px 18px; border-bottom:1px solid var(--border); }
-.logo-mark { font-family:var(--mono); font-size:10px; font-weight:500; color:var(--accent2); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:4px; }
-.logo-title { font-size:15px; font-weight:600; color:var(--text); }
-nav { padding:12px 10px; flex:1; overflow-y:auto; }
-.nav-section-label { font-size:10px; font-weight:500; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; padding:10px 10px 6px; }
-.nav-item {
-  display:flex; align-items:center; gap:10px; padding:9px 10px;
-  border-radius:var(--radius-sm); cursor:pointer; font-size:13.5px;
-  font-weight:400; color:var(--text2); transition:all 0.15s; user-select:none; margin-bottom:1px;
-}
-.nav-item:hover { background:var(--surface3); color:var(--text); }
-.nav-item.active { background:var(--accent-dim); color:var(--accent2); font-weight:500; }
-.nav-item svg { opacity:0.7; flex-shrink:0; }
-.nav-item.active svg { opacity:1; }
-.nav-item.viewer-disabled { opacity:0.3; cursor:not-allowed; pointer-events:none; }
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
+.logo-mark{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--accent2);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;}
+.logo-title{font-size:15px;font-weight:600;color:var(--text);}
+nav{padding:12px 10px;flex:1;overflow-y:auto;}
+.nav-section-label{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:10px 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13.5px;font-weight:400;color:var(--text2);transition:all 0.15s;user-select:none;margin-bottom:1px;}
+.nav-item:hover{background:var(--surface3);color:var(--text);}
+.nav-item.active{background:var(--accent-dim);color:var(--accent2);font-weight:500;}
+.nav-item svg{opacity:0.7;flex-shrink:0;}
+.nav-item.active svg{opacity:1;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;background:var(--accent-dim);color:var(--accent2);}
+.sidebar-user-name{font-size:13px;font-weight:500;color:var(--text2);}
+.sidebar-user-role{font-size:11px;color:var(--text3);margin-top:1px;}
+.sidebar-btns{display:flex;flex-direction:column;gap:6px;}
+.sidebar-btn{width:100%;padding:7px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text3);font-size:12px;font-family:var(--font);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.sidebar-btn:hover{background:var(--surface3);color:var(--text2);border-color:var(--border2);}
 
-.sidebar-footer { padding:14px 16px; border-top:1px solid var(--border); }
-.sidebar-user { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.sidebar-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex-shrink:0; }
-.sidebar-user-info { flex:1; min-width:0; }
-.sidebar-user-name { font-size:13px; font-weight:500; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sidebar-user-email { font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sidebar-role-badge { font-size:10px; font-weight:600; padding:2px 9px; border-radius:10px; display:inline-block; margin-bottom:10px; }
-.logout-btn {
-  width:100%; padding:7px; background:transparent; border:1px solid var(--border);
-  border-radius:var(--radius-sm); color:var(--text3); font-size:12px; font-family:var(--font);
-  cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:6px;
-}
-.logout-btn:hover { background:var(--surface3); color:var(--text2); border-color:var(--border2); }
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.page-title{font-size:15px;font-weight:600;color:var(--text);flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:var(--font);}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.2);}
+.btn-danger:hover{background:rgba(239,68,68,0.2);}
+.content{flex:1;overflow-y:auto;padding:24px;}
+.page{display:none;}
+.page.active{display:block;}
 
-.main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
-.topbar {
-  height:54px; background:var(--surface); border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 24px; gap:16px; flex-shrink:0;
-}
-.page-title { font-size:15px; font-weight:600; color:var(--text); flex:1; }
-.topbar-actions { display:flex; gap:8px; align-items:center; }
+/* DASHBOARD */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.stat-card:hover{border-color:var(--border2);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.purple::before{background:var(--accent);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.amber::before{background:var(--amber);}
+.stat-card.red::before{background:var(--red);}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;}
+.stat-value{font-size:28px;font-weight:600;font-family:var(--mono);line-height:1;margin-bottom:6px;}
+.stat-card.purple .stat-value{color:var(--accent2);}
+.stat-card.green .stat-value{color:var(--green);}
+.stat-card.amber .stat-value{color:var(--amber);}
+.stat-card.red .stat-value{color:var(--red);}
+.stat-sub{font-size:12px;color:var(--text3);}
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-size:13px;font-weight:600;color:var(--text);}
+.panel-body{padding:16px 18px;}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.amber{background:var(--amber);}
+.activity-dot.red{background:var(--red);}
+.activity-dot.blue{background:var(--blue);}
+.activity-text{flex:1;color:var(--text2);line-height:1.5;}
+.activity-text strong{color:var(--text);font-weight:500;}
+.activity-time{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;}
+.dist-item{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.dist-label{font-size:13px;color:var(--text2);width:90px;flex-shrink:0;}
+.dist-bar-wrap{flex:1;background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
+.dist-bar{height:100%;border-radius:4px;}
+.dist-count{font-family:var(--mono);font-size:12px;color:var(--text3);width:36px;text-align:right;}
 
-.viewer-banner {
-  display:none; background:var(--viewer-dim); border-bottom:1px solid rgba(245,158,11,0.2);
-  padding:8px 24px; font-size:12px; color:var(--viewer);
-  align-items:center; gap:8px; flex-shrink:0;
-}
-.viewer-banner.show { display:flex; }
+/* TABLE */
+.toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+.search-wrap{position:relative;flex:1;max-width:340px;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);}
+.search-input{width:100%;padding:8px 12px 8px 34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.15s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--text3);}
+select.filter-select{padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;font-family:var(--font);outline:none;cursor:pointer;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--surface2);}
+th{padding:11px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:12px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{transition:background 0.1s;cursor:pointer;}
+tbody tr:hover{background:var(--surface2);}
+.asset-id{font-family:var(--mono);font-size:12px;color:var(--text3);}
+.asset-name{color:var(--text);font-weight:500;}
+.asset-name small{display:block;font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;}
+.badge-green{background:var(--green-dim);color:var(--green);}
+.badge-green::before{background:var(--green);}
+.badge-amber{background:var(--amber-dim);color:var(--amber);}
+.badge-amber::before{background:var(--amber);}
+.badge-red{background:var(--red-dim);color:var(--red);}
+.badge-red::before{background:var(--red);}
+.badge-blue{background:var(--blue-dim);color:var(--blue);}
+.badge-blue::before{background:var(--blue);}
+.badge-gray{background:var(--surface3);color:var(--text3);}
+.badge-gray::before{background:var(--text3);}
+.action-btn{padding:5px 10px;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:var(--font);transition:all 0.15s;}
+.action-btn:hover:not(:disabled){background:var(--surface3);color:var(--text);}
+.action-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
+.page-btns{display:flex;gap:4px;}
+.page-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:var(--font);}
+.page-btn:hover{background:var(--surface3);}
+.page-btn.active{background:var(--accent-dim);color:var(--accent2);border-color:var(--accent);}
 
-.btn {
-  display:inline-flex; align-items:center; gap:6px; padding:7px 14px;
-  border-radius:var(--radius-sm); font-size:13px; font-weight:500;
-  cursor:pointer; border:none; transition:all 0.15s; font-family:var(--font);
-}
-.btn-primary { background:var(--accent); color:#fff; }
-.btn-primary:hover { background:var(--accent2); }
-.btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border); }
-.btn-ghost:hover { background:var(--surface3); color:var(--text); border-color:var(--border2); }
-.btn-danger { background:var(--red-dim); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
-.btn-danger:hover { background:rgba(239,68,68,0.2); }
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:12px;font-weight:500;color:var(--text3);}
+.form-control{padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.15s;}
+.form-control:focus{border-color:var(--accent);}
+.form-control::placeholder{color:var(--text3);}
+select.form-control{cursor:pointer;}
 
-.content { flex:1; overflow-y:auto; padding:24px; }
-.page { display:none; }
-.page.active { display:block; }
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:560px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.5);animation:modal-in 0.2s ease;}
+@keyframes modal-in{from{opacity:0;transform:translateY(12px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-sm{width:400px;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:600;}
+.modal-close{width:28px;height:28px;border-radius:6px;background:var(--surface3);border:none;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background 0.15s;}
+.modal-close:hover{background:var(--border2);}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.detail-row{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{color:var(--text3);width:130px;flex-shrink:0;}
+.detail-val{color:var(--text);}
 
-/* Dashboard */
-.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; position:relative; overflow:hidden; transition:border-color 0.2s; }
-.stat-card:hover { border-color:var(--border2); }
-.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-.stat-card.purple::before{background:var(--accent);} .stat-card.green::before{background:var(--green);}
-.stat-card.amber::before{background:var(--amber);} .stat-card.red::before{background:var(--red);}
-.stat-label { font-size:11px; color:var(--text3); font-weight:500; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; }
-.stat-value { font-size:28px; font-weight:600; font-family:var(--mono); line-height:1; margin-bottom:6px; }
-.stat-card.purple .stat-value{color:var(--accent2);} .stat-card.green .stat-value{color:var(--green);}
-.stat-card.amber .stat-value{color:var(--amber);} .stat-card.red .stat-value{color:var(--red);}
-.stat-sub { font-size:12px; color:var(--text3); }
-.dashboard-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-.panel-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.panel-title { font-size:13px; font-weight:600; color:var(--text); }
-.panel-body { padding:16px 18px; }
-.activity-item { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
-.activity-item:last-child { border-bottom:none; }
-.activity-dot { width:8px; height:8px; border-radius:50%; margin-top:4px; flex-shrink:0; }
-.activity-dot.green{background:var(--green);} .activity-dot.amber{background:var(--amber);}
-.activity-dot.red{background:var(--red);} .activity-dot.blue{background:var(--blue);}
-.activity-text { flex:1; color:var(--text2); line-height:1.5; }
-.activity-text strong { color:var(--text); font-weight:500; }
-.activity-time { font-size:11px; color:var(--text3); font-family:var(--mono); white-space:nowrap; }
-.dist-item { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-.dist-label { font-size:13px; color:var(--text2); width:90px; flex-shrink:0; }
-.dist-bar-wrap { flex:1; background:var(--surface3); border-radius:4px; height:6px; overflow:hidden; }
-.dist-bar { height:100%; border-radius:4px; }
-.dist-count { font-family:var(--mono); font-size:12px; color:var(--text3); width:36px; text-align:right; }
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:200;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.toast-success{background:var(--green-dim);color:var(--green);}
+.toast-warn{background:var(--amber-dim);color:var(--amber);}
 
-/* Table */
-.toolbar { display:flex; gap:10px; margin-bottom:16px; align-items:center; }
-.search-wrap { position:relative; flex:1; max-width:340px; }
-.search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text3); }
-.search-input { width:100%; padding:8px 12px 8px 34px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; font-family:var(--font); outline:none; transition:border-color 0.15s; }
-.search-input:focus { border-color:var(--accent); }
-.search-input::placeholder { color:var(--text3); }
-select.filter-select { padding:8px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text2); font-size:13px; font-family:var(--font); outline:none; cursor:pointer; }
-.table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-table { width:100%; border-collapse:collapse; }
-thead tr { background:var(--surface2); }
-th { padding:11px 16px; text-align:left; font-size:11px; font-weight:600; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--border); white-space:nowrap; }
-td { padding:12px 16px; font-size:13px; color:var(--text2); border-bottom:1px solid var(--border); vertical-align:middle; }
-tr:last-child td { border-bottom:none; }
-tbody tr { transition:background 0.1s; cursor:pointer; }
-tbody tr:hover { background:var(--surface2); }
-.asset-id { font-family:var(--mono); font-size:12px; color:var(--text3); }
-.asset-name { color:var(--text); font-weight:500; }
-.asset-name small { display:block; font-size:11px; color:var(--text3); font-weight:400; margin-top:2px; }
-.badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:500; white-space:nowrap; }
-.badge::before { content:''; width:5px; height:5px; border-radius:50%; }
-.badge-green{background:var(--green-dim);color:var(--green);} .badge-green::before{background:var(--green);}
-.badge-amber{background:var(--amber-dim);color:var(--amber);} .badge-amber::before{background:var(--amber);}
-.badge-red{background:var(--red-dim);color:var(--red);} .badge-red::before{background:var(--red);}
-.badge-blue{background:var(--blue-dim);color:var(--blue);} .badge-blue::before{background:var(--blue);}
-.badge-gray{background:var(--surface3);color:var(--text3);} .badge-gray::before{background:var(--text3);}
-.action-btn { padding:5px 10px; border-radius:var(--radius-sm); font-size:12px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text2); font-family:var(--font); transition:all 0.15s; }
-.action-btn:hover:not(:disabled) { background:var(--surface3); color:var(--text); }
-.action-btn:disabled { opacity:0.3; cursor:not-allowed; }
-.pagination { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); }
-.page-btns { display:flex; gap:4px; }
-.page-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text2); font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:var(--font); }
-.page-btn:hover { background:var(--surface3); }
-.page-btn.active { background:var(--accent-dim); color:var(--accent2); border-color:var(--accent); }
-
-/* Form */
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.form-group { display:flex; flex-direction:column; gap:6px; }
-.form-group.full { grid-column:1/-1; }
-.form-label { font-size:12px; font-weight:500; color:var(--text3); }
-.form-control { padding:9px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:13px; font-family:var(--font); outline:none; transition:border-color 0.15s; }
-.form-control:focus { border-color:var(--accent); }
-.form-control::placeholder { color:var(--text3); }
-select.form-control { cursor:pointer; }
-
-/* Modal */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:100; align-items:center; justify-content:center; }
-.modal-overlay.open { display:flex; }
-.modal { background:var(--surface); border:1px solid var(--border2); border-radius:14px; width:560px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:modal-in 0.2s ease; }
-@keyframes modal-in { from{opacity:0;transform:translateY(12px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
-.modal-header { padding:20px 24px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.modal-title { font-size:15px; font-weight:600; }
-.modal-close { width:28px; height:28px; border-radius:6px; background:var(--surface3); border:none; color:var(--text2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:background 0.15s; }
-.modal-close:hover { background:var(--border2); }
-.modal-body { padding:20px 24px; overflow-y:auto; flex:1; }
-.modal-footer { padding:14px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
-.detail-row { display:flex; gap:8px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
-.detail-row:last-child { border-bottom:none; }
-.detail-key { color:var(--text3); width:130px; flex-shrink:0; }
-.detail-val { color:var(--text); }
-
-/* Toast */
-.toast { position:fixed; bottom:24px; right:24px; background:var(--surface3); border:1px solid var(--border2); border-radius:var(--radius); padding:12px 18px; font-size:13px; color:var(--text); display:flex; align-items:center; gap:10px; box-shadow:0 8px 24px rgba(0,0,0,0.3); z-index:200; transform:translateY(80px); opacity:0; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-.toast.show { transform:translateY(0); opacity:1; }
-.toast-icon { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; }
-.toast-success { background:var(--green-dim); color:var(--green); }
-.toast-warn { background:var(--amber-dim); color:var(--amber); }
-::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
-
-/* ── 추가 로그인 스타일 ── */
-.login-section-label { font-size:11px; font-weight:600; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; margin-top:4px; }
-.login-divider { display:flex; align-items:center; gap:12px; margin:18px 0; }
-.login-divider::before, .login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-.login-divider span { font-size:12px; color:var(--text3); }
-.login-google-btn {
-  width:100%; padding:11px 14px; margin-bottom:8px;
-  background:var(--surface2); border:1px solid var(--border2);
-  border-radius:var(--radius-sm); color:var(--text);
-  font-size:14px; font-weight:500; font-family:var(--font);
-  cursor:pointer; transition:all 0.15s;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-}
-.login-google-btn:hover { background:var(--surface3); border-color:var(--accent); }
-.login-google-note { font-size:11px; color:var(--text3); text-align:center; margin-top:8px; }
-
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 </style>
 </head>
 <body>
-
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- LOGIN -->
 <div id="login-screen">
@@ -309,34 +215,16 @@ select.form-control { cursor:pointer; }
       <div class="login-sub">Buzzvil 자산관리 플랫폼</div>
     </div>
     <div class="login-body">
-
-      <!-- 관리자 로그인 -->
-      <div class="login-section-label">관리자 로그인</div>
       <div class="login-form-group">
         <label class="login-label">아이디</label>
-        <input class="login-input" type="text" id="login-email" placeholder="아이디 입력" autocomplete="off">
+        <input class="login-input" type="text" id="login-id" placeholder="아이디 입력" autocomplete="off">
       </div>
       <div class="login-form-group">
         <label class="login-label">비밀번호</label>
         <input class="login-input" type="password" id="login-pw" placeholder="비밀번호 입력">
       </div>
-      <button class="login-btn" id="btn-admin-login">로그인</button>
+      <button class="login-btn" id="btn-login">로그인</button>
       <div class="login-error" id="login-error">아이디 또는 비밀번호가 올바르지 않습니다.</div>
-
-      <!-- 구분선 -->
-      <div class="login-divider">
-        <span>또는</span>
-      </div>
-
-      <!-- Google 로그인 -->
-      <div class="login-section-label">Buzzvil 직원 로그인</div>
-      <button class="login-google-btn" id="btn-google-login">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Google 계정으로 로그인
-      </button>
-      <div class="login-error" id="google-error">buzzvil.com 계정만 접속할 수 있습니다.</div>
-      <div class="login-google-note">@buzzvil.com 계정으로만 로그인 가능합니다</div>
-
     </div>
   </div>
 </div>
@@ -348,7 +236,7 @@ select.form-control { cursor:pointer; }
       <div class="logo-mark">AMS v1.0</div>
       <div class="logo-title">자산관리시스템</div>
     </div>
-    <nav>
+    <nav id="main-nav">
       <div class="nav-section-label">메인</div>
       <div class="nav-item active" data-page="dashboard">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -359,7 +247,7 @@ select.form-control { cursor:pointer; }
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
         자산 목록
       </div>
-      <div class="nav-item" id="nav-register" data-page="register">
+      <div class="nav-item" data-page="register">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
         자산 등록
       </div>
@@ -375,47 +263,44 @@ select.form-control { cursor:pointer; }
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <div class="sidebar-avatar" id="sb-avatar"></div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sb-name"></div>
-          <div class="sidebar-user-email" id="sb-email"></div>
+        <div class="sidebar-avatar">B</div>
+        <div>
+          <div class="sidebar-user-name">관리자</div>
+          <div class="sidebar-user-role">buzzasset</div>
         </div>
       </div>
-      <span class="sidebar-role-badge" id="sb-role-badge"></span>
-      <button class="btn btn-ghost" id="btn-change-pw" style="width:100%;margin-bottom:8px;font-size:12px;justify-content:center;display:none;">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        비밀번호 변경
-      </button>
-      <button class="logout-btn">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        로그아웃
-      </button>
+      <div class="sidebar-btns">
+        <button class="sidebar-btn" id="btn-change-pw">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          비밀번호 변경
+        </button>
+        <button class="sidebar-btn" id="btn-logout">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          로그아웃
+        </button>
+      </div>
     </div>
   </aside>
 
   <main class="main">
     <div class="topbar">
-      <span class="page-title" id="pageTitle">대시보드</span>
-      <div class="topbar-actions" id="topbar-actions">
-        <button class="btn btn-ghost" id="btn-topbar-register">
+      <span class="page-title" id="page-title">대시보드</span>
+      <div>
+        <button class="btn btn-ghost" id="btn-topbar-reg">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
           자산 등록
         </button>
       </div>
     </div>
-    <div class="viewer-banner" id="viewer-banner">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      뷰어 계정으로 로그인되었습니다. 자산 등록·수정·삭제는 <strong style="margin:0 3px;">관리자(Admin)</strong>만 사용할 수 있습니다.
-    </div>
     <div class="content">
 
-      <!-- Dashboard -->
+      <!-- 대시보드 -->
       <div class="page active" id="page-dashboard">
         <div class="stats-grid">
-          <div class="stat-card purple"><div class="stat-label">전체 자산</div><div class="stat-value" id="stat-total">0</div><div class="stat-sub">등록된 자산 수</div></div>
-          <div class="stat-card green"><div class="stat-label">운용 중</div><div class="stat-value" id="stat-active">0</div><div class="stat-sub">정상 운용 자산</div></div>
-          <div class="stat-card amber"><div class="stat-label">점검 중</div><div class="stat-value" id="stat-maint">0</div><div class="stat-sub">유지보수 진행 중</div></div>
-          <div class="stat-card red"><div class="stat-label">폐기 예정</div><div class="stat-value" id="stat-retire">0</div><div class="stat-sub">처분 대기 자산</div></div>
+          <div class="stat-card purple"><div class="stat-label">전체 자산</div><div class="stat-value" id="s-total">0</div><div class="stat-sub">등록된 자산 수</div></div>
+          <div class="stat-card green"><div class="stat-label">운용 중</div><div class="stat-value" id="s-active">0</div><div class="stat-sub">정상 운용 자산</div></div>
+          <div class="stat-card amber"><div class="stat-label">점검 중</div><div class="stat-value" id="s-maint">0</div><div class="stat-sub">유지보수 진행 중</div></div>
+          <div class="stat-card red"><div class="stat-label">폐기 예정</div><div class="stat-value" id="s-retire">0</div><div class="stat-sub">처분 대기 자산</div></div>
         </div>
         <div class="dashboard-grid">
           <div class="panel"><div class="panel-header"><span class="panel-title">최근 활동</span></div><div class="panel-body" id="activity-list"></div></div>
@@ -423,49 +308,49 @@ select.form-control { cursor:pointer; }
         </div>
       </div>
 
-      <!-- Assets -->
+      <!-- 자산 목록 -->
       <div class="page" id="page-assets">
         <div class="toolbar">
           <div class="search-wrap">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input class="search-input" type="text" placeholder="자산명, 자산번호 검색..." id="searchInput" oninput="renderTable()">
+            <input class="search-input" type="text" id="search-input" placeholder="자산명, 자산번호 검색...">
           </div>
-          <select class="filter-select" id="statusFilter" onchange="renderTable()">
+          <select class="filter-select" id="status-filter">
             <option value="">전체 상태</option><option>운용 중</option><option>점검 중</option><option>유휴</option><option>폐기 예정</option>
           </select>
-          <select class="filter-select" id="categoryFilter" onchange="renderTable()">
+          <select class="filter-select" id="category-filter">
             <option value="">전체 카테고리</option><option>IT장비</option><option>사무기기</option><option>생산설비</option><option>차량</option><option>가구</option>
           </select>
-          <button class="btn btn-primary" id="btn-table-register">
+          <button class="btn btn-primary" id="btn-table-reg">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             자산 등록
           </button>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>자산번호</th><th>자산명</th><th>카테고리</th><th>상태</th><th>위치</th><th>담당자</th><th>취득일</th><th>관리</th></tr></thead>
-          <tbody id="assetTableBody"></tbody></table>
-          <div class="pagination"><span id="pageInfo">0개 자산</span><div class="page-btns" id="pageBtns"></div></div>
+          <tbody id="asset-tbody"></tbody></table>
+          <div class="pagination"><span id="page-info"></span><div class="page-btns" id="page-btns"></div></div>
         </div>
       </div>
 
-      <!-- Register -->
+      <!-- 자산 등록 -->
       <div class="page" id="page-register">
         <div style="max-width:640px;">
           <div class="panel">
             <div class="panel-header"><span class="panel-title">새 자산 등록</span></div>
             <div class="panel-body">
               <div class="form-grid" style="margin-bottom:16px;">
-                <div class="form-group"><label class="form-label">자산명 *</label><input class="form-control" type="text" id="reg-name" placeholder="예: MacBook Pro 14"></div>
-                <div class="form-group"><label class="form-label">카테고리 *</label><select class="form-control" id="reg-category"><option value="">선택</option><option>IT장비</option><option>사무기기</option><option>생산설비</option><option>차량</option><option>가구</option></select></div>
-                <div class="form-group"><label class="form-label">제조사</label><input class="form-control" type="text" id="reg-maker" placeholder="예: Apple"></div>
-                <div class="form-group"><label class="form-label">모델명</label><input class="form-control" type="text" id="reg-model"></div>
-                <div class="form-group"><label class="form-label">시리얼번호</label><input class="form-control" type="text" id="reg-serial"></div>
-                <div class="form-group"><label class="form-label">상태</label><select class="form-control" id="reg-status"><option>운용 중</option><option>유휴</option><option>점검 중</option><option>폐기 예정</option></select></div>
-                <div class="form-group"><label class="form-label">위치</label><input class="form-control" type="text" id="reg-location" placeholder="예: 본사 3층 개발팀"></div>
-                <div class="form-group"><label class="form-label">담당자</label><input class="form-control" type="text" id="reg-manager"></div>
-                <div class="form-group"><label class="form-label">취득일 *</label><input class="form-control" type="date" id="reg-date"></div>
-                <div class="form-group"><label class="form-label">취득 금액 (원)</label><input class="form-control" type="number" id="reg-price"></div>
-                <div class="form-group full"><label class="form-label">메모</label><textarea class="form-control" id="reg-memo" rows="3" style="resize:vertical;"></textarea></div>
+                <div class="form-group"><label class="form-label">자산명 *</label><input class="form-control" type="text" id="r-name" placeholder="예: MacBook Pro 14"></div>
+                <div class="form-group"><label class="form-label">카테고리 *</label><select class="form-control" id="r-cat"><option value="">선택</option><option>IT장비</option><option>사무기기</option><option>생산설비</option><option>차량</option><option>가구</option></select></div>
+                <div class="form-group"><label class="form-label">제조사</label><input class="form-control" type="text" id="r-maker"></div>
+                <div class="form-group"><label class="form-label">모델명</label><input class="form-control" type="text" id="r-model"></div>
+                <div class="form-group"><label class="form-label">시리얼번호</label><input class="form-control" type="text" id="r-serial"></div>
+                <div class="form-group"><label class="form-label">상태</label><select class="form-control" id="r-status"><option>운용 중</option><option>유휴</option><option>점검 중</option><option>폐기 예정</option></select></div>
+                <div class="form-group"><label class="form-label">위치</label><input class="form-control" type="text" id="r-location" placeholder="예: 본사 3층 개발팀"></div>
+                <div class="form-group"><label class="form-label">담당자</label><input class="form-control" type="text" id="r-manager"></div>
+                <div class="form-group"><label class="form-label">취득일 *</label><input class="form-control" type="date" id="r-date"></div>
+                <div class="form-group"><label class="form-label">취득 금액 (원)</label><input class="form-control" type="number" id="r-price"></div>
+                <div class="form-group full"><label class="form-label">메모</label><textarea class="form-control" id="r-memo" rows="3" style="resize:vertical;"></textarea></div>
               </div>
               <div style="display:flex;gap:8px;">
                 <button class="btn btn-primary" id="btn-reg-submit">등록하기</button>
@@ -476,7 +361,7 @@ select.form-control { cursor:pointer; }
         </div>
       </div>
 
-      <!-- Maintenance -->
+      <!-- 유지보수 -->
       <div class="page" id="page-maintenance">
         <div class="panel">
           <div class="panel-header">
@@ -485,12 +370,12 @@ select.form-control { cursor:pointer; }
           </div>
           <div class="panel-body">
             <table style="width:100%"><thead><tr><th>작업번호</th><th>자산명</th><th>작업 유형</th><th>예정일</th><th>상태</th><th>담당자</th></tr></thead>
-            <tbody id="maintenanceBody"></tbody></table>
+            <tbody id="maint-tbody"></tbody></table>
           </div>
         </div>
       </div>
 
-      <!-- Reports -->
+      <!-- 보고서 -->
       <div class="page" id="page-reports">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div class="panel"><div class="panel-header"><span class="panel-title">자산 현황 요약</span></div><div class="panel-body" id="report-summary"></div></div>
@@ -498,11 +383,11 @@ select.form-control { cursor:pointer; }
           <div class="panel" style="grid-column:1/-1;">
             <div class="panel-header"><span class="panel-title">내보내기</span></div>
             <div class="panel-body" style="display:flex;gap:10px;align-items:center;">
-              <button class="btn btn-ghost" data-action="export-csv">
+              <button class="btn btn-ghost" id="btn-csv">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 CSV 다운로드
               </button>
-              <span style="font-size:12px;color:var(--text3)">전체 자산 데이터를 CSV 형식으로 내보냅니다</span>
+              <span style="font-size:12px;color:var(--text3)">전체 자산 데이터를 CSV로 내보냅니다</span>
             </div>
           </div>
         </div>
@@ -512,14 +397,14 @@ select.form-control { cursor:pointer; }
   </main>
 </div>
 
-<!-- Modals -->
-<div class="modal-overlay" id="assetModal">
+<!-- 자산 등록/수정 모달 -->
+<div class="modal-overlay" id="modal-asset">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title" id="modalTitle">자산 등록</span><button class="modal-close">✕</button></div>
+    <div class="modal-header"><span class="modal-title" id="modal-asset-title">자산 등록</span><button class="modal-close" data-close="modal-asset">✕</button></div>
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group"><label class="form-label">자산명 *</label><input class="form-control" type="text" id="m-name"></div>
-        <div class="form-group"><label class="form-label">카테고리 *</label><select class="form-control" id="m-category"><option value="">선택</option><option>IT장비</option><option>사무기기</option><option>생산설비</option><option>차량</option><option>가구</option></select></div>
+        <div class="form-group"><label class="form-label">카테고리 *</label><select class="form-control" id="m-cat"><option value="">선택</option><option>IT장비</option><option>사무기기</option><option>생산설비</option><option>차량</option><option>가구</option></select></div>
         <div class="form-group"><label class="form-label">제조사</label><input class="form-control" type="text" id="m-maker"></div>
         <div class="form-group"><label class="form-label">모델명</label><input class="form-control" type="text" id="m-model"></div>
         <div class="form-group"><label class="form-label">시리얼번호</label><input class="form-control" type="text" id="m-serial"></div>
@@ -532,23 +417,25 @@ select.form-control { cursor:pointer; }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost">취소</button>
-      <button class="btn btn-primary" id="modalSaveBtn">등록</button>
+      <button class="btn btn-ghost" data-close="modal-asset">취소</button>
+      <button class="btn btn-primary" id="btn-modal-save">등록</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="detailModal">
+<!-- 자산 상세 모달 -->
+<div class="modal-overlay" id="modal-detail">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">자산 상세 정보</span><button class="modal-close">✕</button></div>
-    <div class="modal-body" id="detailBody"></div>
-    <div class="modal-footer" id="detailFooter"></div>
+    <div class="modal-header"><span class="modal-title">자산 상세 정보</span><button class="modal-close" data-close="modal-detail">✕</button></div>
+    <div class="modal-body" id="modal-detail-body"></div>
+    <div class="modal-footer" id="modal-detail-footer"></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="maintenanceModal">
+<!-- 유지보수 모달 -->
+<div class="modal-overlay" id="modal-maint">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">유지보수 작업 등록</span><button class="modal-close">✕</button></div>
+    <div class="modal-header"><span class="modal-title">유지보수 작업 등록</span><button class="modal-close" data-close="modal-maint">✕</button></div>
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group"><label class="form-label">대상 자산</label><select class="form-control" id="mt-asset"></select></div>
@@ -559,486 +446,464 @@ select.form-control { cursor:pointer; }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" data-action="close-maintenance">취소</button>
-      <button class="btn btn-primary" data-action="save-maintenance">등록</button>
+      <button class="btn btn-ghost" data-close="modal-maint">취소</button>
+      <button class="btn btn-primary" id="btn-maint-save">등록</button>
     </div>
   </div>
 </div>
 
 <!-- 비밀번호 변경 모달 -->
-<div class="modal-overlay" id="pwModal">
-  <div class="modal" style="width:400px;">
-    <div class="modal-header">
-      <span class="modal-title">비밀번호 변경</span>
-      <button class="modal-close" id="pw-modal-close">✕</button>
-    </div>
+<div class="modal-overlay" id="modal-pw">
+  <div class="modal modal-sm">
+    <div class="modal-header"><span class="modal-title">비밀번호 변경</span><button class="modal-close" data-close="modal-pw">✕</button></div>
     <div class="modal-body">
       <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="form-group">
-          <label class="form-label">현재 비밀번호</label>
-          <input class="form-control" type="password" id="pw-current" placeholder="현재 비밀번호 입력">
-        </div>
-        <div class="form-group">
-          <label class="form-label">새 비밀번호</label>
-          <input class="form-control" type="password" id="pw-new" placeholder="새 비밀번호 입력 (6자 이상)">
-        </div>
-        <div class="form-group">
-          <label class="form-label">새 비밀번호 확인</label>
-          <input class="form-control" type="password" id="pw-confirm" placeholder="새 비밀번호 재입력">
-        </div>
-        <div class="login-error" id="pw-error" style="margin-top:0;"></div>
+        <div class="form-group"><label class="form-label">현재 비밀번호</label><input class="form-control" type="password" id="pw-cur" placeholder="현재 비밀번호"></div>
+        <div class="form-group"><label class="form-label">새 비밀번호</label><input class="form-control" type="password" id="pw-new" placeholder="새 비밀번호 (6자 이상)"></div>
+        <div class="form-group"><label class="form-label">새 비밀번호 확인</label><input class="form-control" type="password" id="pw-cfm" placeholder="새 비밀번호 재입력"></div>
+        <div class="login-error" id="pw-error"></div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" id="pw-cancel-btn">취소</button>
-      <button class="btn btn-primary" id="pw-save-btn">변경하기</button>
+      <button class="btn btn-ghost" data-close="modal-pw">취소</button>
+      <button class="btn btn-primary" id="btn-pw-save">변경하기</button>
     </div>
   </div>
 </div>
 
+<!-- 토스트 -->
 <div class="toast" id="toast">
   <div class="toast-icon toast-success" id="toast-icon">✓</div>
-  <span id="toastMsg"></span>
+  <span id="toast-msg"></span>
 </div>
 
-<script type="text/javascript">
-
-// ── DOMContentLoaded: 모든 이벤트 바인딩 ──
+<script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  const GOOGLE_CLIENT_ID = '192727052852-0k55qupb1pirbp0up86d2mmqhjv5ra19.apps.googleusercontent.com';
-  const ALLOWED_DOMAIN   = 'buzzvil.com';
-  const ADMIN_ACCOUNT    = { id:'buzzasst', pw: atob('YnV6ejI2MDIwOSE='), name:'관리자', role:'admin' };
-  let adminPw = ADMIN_ACCOUNT.pw; // 런타임 비밀번호 (변경 반영)
+  // 계정
+  var ADMIN_ID = 'buzzasset';
+  var adminPw  = 'buzz260209';
 
-  let currentUser = null;
-  const isAdmin = () => currentUser?.role === 'admin';
+  // 데이터
+  var assets = [
+    { id:'IT-2025-001', name:'MacBook Pro 14인치', category:'IT장비', maker:'Apple', model:'MK183KH/A', serial:'C02X1234ABCD', status:'운용 중', location:'본사 3층 개발팀', manager:'김민준', date:'2025-03-10', price:2800000, memo:'개발팀 주력 노트북' },
+    { id:'IT-2025-002', name:'Dell 모니터 27인치', category:'IT장비', maker:'Dell', model:'U2722D', serial:'CN-0D1234', status:'운용 중', location:'본사 3층 개발팀', manager:'박서연', date:'2025-02-15', price:650000, memo:'' },
+    { id:'IT-2025-003', name:'HP LaserJet Pro', category:'사무기기', maker:'HP', model:'M404dw', serial:'PHBG123456', status:'점검 중', location:'본사 2층 총무팀', manager:'이수진', date:'2024-11-20', price:450000, memo:'토너 교체 예정' },
+    { id:'IT-2025-004', name:'아이패드 Pro 12.9', category:'IT장비', maker:'Apple', model:'MHNK3KH/A', serial:'DMPX9876WK', status:'유휴', location:'창고', manager:'', date:'2024-08-05', price:1500000, memo:'구형 모델 대체' },
+    { id:'EQ-2025-001', name:'CNC 밀링머신 1호', category:'생산설비', maker:'화천기계', model:'HI-V500', serial:'HC2024-001', status:'운용 중', location:'공장 A동', manager:'정대호', date:'2024-01-15', price:85000000, memo:'분기 점검 완료' },
+    { id:'EQ-2025-002', name:'지게차 3.5톤', category:'차량', maker:'두산인프라코어', model:'G35E-5', serial:'DI202300123', status:'운용 중', location:'물류창고', manager:'최성훈', date:'2023-07-20', price:32000000, memo:'' },
+    { id:'FN-2025-001', name:'회의용 테이블 12인', category:'가구', maker:'퍼시스', model:'OT-1200', serial:'', status:'운용 중', location:'본사 5층 회의실', manager:'', date:'2022-04-01', price:1200000, memo:'' },
+    { id:'IT-2025-005', name:'NAS 서버 DS920+', category:'IT장비', maker:'Synology', model:'DS920+', serial:'SYN2024XYZ', status:'운용 중', location:'서버실', manager:'김민준', date:'2025-01-08', price:980000, memo:'사내 파일 서버' },
+    { id:'IT-2025-006', name:'무선 AP Cisco', category:'IT장비', maker:'Cisco', model:'Catalyst 9120', serial:'FCW2345ABCD', status:'폐기 예정', location:'창고', manager:'', date:'2019-06-12', price:320000, memo:'노후 장비' }
+  ];
 
-  // ── 관리자 로그인 ──
-  document.getElementById('login-pw').addEventListener('keydown', e => { if (e.key === 'Enter') doAdminLogin(); });
-  document.getElementById('btn-admin-login').addEventListener('click', doAdminLogin);
+  var maintenance = [
+    { id:'WO-001', assetId:'IT-2025-003', assetName:'HP LaserJet Pro', type:'정기 점검', date:'2025-03-20', status:'진행 중', manager:'이수진', desc:'토너 잔량 확인 및 교체' },
+    { id:'WO-002', assetId:'EQ-2025-001', assetName:'CNC 밀링머신 1호', type:'부품 교체', date:'2025-04-01', status:'예정', manager:'정대호', desc:'스핀들 베어링 교체' },
+    { id:'WO-003', assetId:'EQ-2025-002', assetName:'지게차 3.5톤', type:'정기 점검', date:'2025-03-25', status:'예정', manager:'최성훈', desc:'분기 정기 점검' }
+  ];
 
-  function doAdminLogin() {
-    const id  = document.getElementById('login-email').value.trim();
-    const pw  = document.getElementById('login-pw').value;
-    const err = document.getElementById('login-error');
-    if (id === ADMIN_ACCOUNT.id && pw === adminPw) {
+  var activities = [
+    { type:'green', text:'<strong>IT-2025-005 NAS DS920+</strong> 자산이 등록되었습니다', time:'오늘 09:21' },
+    { type:'amber', text:'<strong>IT-2025-003 HP LaserJet Pro</strong> 상태가 점검 중으로 변경', time:'오늘 08:55' },
+    { type:'blue',  text:'<strong>IT-2025-004 아이패드 Pro</strong> 위치가 창고로 이전', time:'어제 17:30' },
+    { type:'red',   text:'<strong>IT-2025-006 Cisco AP</strong> 폐기 예정으로 분류', time:'어제 14:10' },
+    { type:'green', text:'<strong>EQ-2025-001 CNC 밀링머신</strong> 분기 점검 완료', time:'3일 전' }
+  ];
+
+  var idCnt = 10, curPage = 1, editId = null;
+  var PAGE = 7;
+
+  // ── 로그인 ──
+  function doLogin() {
+    var id = document.getElementById('login-id').value.trim();
+    var pw = document.getElementById('login-pw').value;
+    var err = document.getElementById('login-error');
+    if (id === ADMIN_ID && pw === adminPw) {
       err.classList.remove('show');
-      startApp({ name:'관리자', email:'buzzasst', role:'admin', avatar:'B' });
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').classList.add('visible');
+      navigate('dashboard');
+      renderDashboard();
+      renderTable();
     } else {
       err.classList.add('show');
     }
   }
 
-  // ── Google 로그인 ──
-  document.getElementById('btn-google-login').addEventListener('click', () => {
-    google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'email profile',
-      callback: async (tokenResponse) => {
-        const res  = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: 'Bearer ' + tokenResponse.access_token }
-        });
-        const info = await res.json();
-        const err  = document.getElementById('google-error');
-        if (!info.email || !info.email.endsWith('@' + ALLOWED_DOMAIN)) {
-          err.classList.add('show');
-          return;
-        }
-        err.classList.remove('show');
-        const firstName = info.name?.split(' ')[0] || info.email.split('@')[0];
-        startApp({
-          name:   info.name || firstName,
-          email:  info.email,
-          role:   'viewer',
-          avatar: firstName[0].toUpperCase(),
-          picture: info.picture || null,
-        });
-      },
-    }).requestAccessToken();
-  });
+  document.getElementById('btn-login').addEventListener('click', doLogin);
+  document.getElementById('login-pw').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 
-  function startApp(user) {
-    currentUser = user;
-    const av = document.getElementById('sb-avatar');
-    av.textContent = user.avatar;
-    av.className   = 'sidebar-avatar ' + (isAdmin() ? 'avatar-admin' : 'avatar-viewer');
-    if (user.picture) { av.style.backgroundImage=`url(${user.picture})`; av.style.backgroundSize='cover'; av.textContent=''; }
-    document.getElementById('sb-name').textContent  = user.name;
-    document.getElementById('sb-email').textContent = user.email;
-    const rb = document.getElementById('sb-role-badge');
-    rb.textContent = isAdmin() ? '관리자 (Admin)' : '뷰어 (Viewer)';
-    rb.className   = 'sidebar-role-badge ' + (isAdmin() ? 'role-admin' : 'role-viewer');
-
-    document.getElementById('viewer-banner').classList.toggle('show', !isAdmin());
-    // 비밀번호 변경 버튼 — 관리자만 표시
-    document.getElementById('btn-change-pw').style.display = isAdmin() ? '' : 'none';
-    const navReg = document.getElementById('nav-register');
-    if (isAdmin()) {
-      navReg.classList.remove('viewer-disabled');
-      document.getElementById('btn-topbar-register').style.display = '';
-      document.getElementById('btn-table-register').style.display  = '';
-      document.getElementById('btn-wo-add').style.display          = '';
-    } else {
-      navReg.classList.add('viewer-disabled');
-      document.getElementById('btn-topbar-register').style.display = 'none';
-      document.getElementById('btn-table-register').style.display  = 'none';
-      document.getElementById('btn-wo-add').style.display          = 'none';
-    }
-
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').classList.add('visible');
-    navigate('dashboard', document.querySelector('.nav-item'));
-    renderDashboard();
-    renderTable();
-  }
-
-  function doLogout() {
-    currentUser = null;
+  // ── 로그아웃 ──
+  document.getElementById('btn-logout').addEventListener('click', function() {
     document.getElementById('app').classList.remove('visible');
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('login-email').value = '';
-    document.getElementById('login-pw').value    = '';
-    document.getElementById('login-error').classList.remove('show');
-    document.getElementById('google-error').classList.remove('show');
-  }
-
-  function guard() {
-    if (!isAdmin()) { showToast('관리자만 사용할 수 있는 기능입니다.', 'warn'); return false; }
-    return true;
-  }
-
-  // ── 비밀번호 변경 ──.addEventListener('click', () => {
-    ['pw-current','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('pw-error').classList.remove('show');
-    document.getElementById('pwModal').classList.add('open');
+    document.getElementById('login-id').value = '';
+    document.getElementById('login-pw').value = '';
   });
-  document.getElementById('pw-modal-close').addEventListener('click', () => document.getElementById('pwModal').classList.remove('open'));
-  document.getElementById('pw-cancel-btn').addEventListener('click', () => document.getElementById('pwModal').classList.remove('open'));
-  document.getElementById('pw-save-btn').addEventListener('click', changePassword);
-  document.getElementById('pw-confirm').addEventListener('keydown', e => { if (e.key === 'Enter') changePassword(); });
 
-  function changePassword() {
-    const current = document.getElementById('pw-current').value;
-    const next    = document.getElementById('pw-new').value;
-    const confirm = document.getElementById('pw-confirm').value;
-    const err     = document.getElementById('pw-error');
+  // ── 네비게이션 ──
+  var pageTitles = { dashboard:'대시보드', assets:'자산 목록', register:'자산 등록', maintenance:'유지보수', reports:'보고서' };
 
-    if (current !== adminPw) {
-      err.textContent = '현재 비밀번호가 올바르지 않습니다.'; err.classList.add('show'); return;
-    }
-    if (next.length < 6) {
-      err.textContent = '새 비밀번호는 6자 이상이어야 합니다.'; err.classList.add('show'); return;
-    }
-    if (next !== confirm) {
-      err.textContent = '새 비밀번호가 일치하지 않습니다.'; err.classList.add('show'); return;
-    }
-    adminPw = next;
-    document.getElementById('pwModal').classList.remove('open');
-    showToast('비밀번호가 변경되었습니다.');
-  }
-
-  // ── Data ──
-  let assets = [
-    { id:'IT-2025-001', name:'MacBook Pro 14인치',  category:'IT장비',   maker:'Apple',          model:'MK183KH/A',    serial:'C02X1234ABCD', status:'운용 중',  location:'본사 3층 개발팀', manager:'김민준', date:'2025-03-10', price:2800000,  memo:'개발팀 주력 노트북' },
-    { id:'IT-2025-002', name:'Dell 모니터 27인치',  category:'IT장비',   maker:'Dell',           model:'U2722D',       serial:'CN-0D1234',    status:'운용 중',  location:'본사 3층 개발팀', manager:'박서연', date:'2025-02-15', price:650000,   memo:'' },
-    { id:'IT-2025-003', name:'HP LaserJet Pro',     category:'사무기기',  maker:'HP',             model:'M404dw',       serial:'PHBG123456',   status:'점검 중',  location:'본사 2층 총무팀', manager:'이수진', date:'2024-11-20', price:450000,   memo:'토너 교체 예정' },
-    { id:'IT-2025-004', name:'아이패드 Pro 12.9',   category:'IT장비',   maker:'Apple',          model:'MHNK3KH/A',    serial:'DMPX9876WK',   status:'유휴',     location:'창고',            manager:'',       date:'2024-08-05', price:1500000,  memo:'구형 모델 대체' },
-    { id:'EQ-2025-001', name:'CNC 밀링머신 #1',     category:'생산설비', maker:'화천기계',        model:'HI-V500',      serial:'HC2024-001',   status:'운용 중',  location:'공장 A동',        manager:'정대호', date:'2024-01-15', price:85000000, memo:'분기 점검 완료' },
-    { id:'EQ-2025-002', name:'지게차 3.5톤',        category:'차량',     maker:'두산인프라코어',  model:'G35E-5',       serial:'DI202300123',  status:'운용 중',  location:'물류창고',        manager:'최성훈', date:'2023-07-20', price:32000000, memo:'' },
-    { id:'FN-2025-001', name:'회의용 테이블 12인',  category:'가구',     maker:'퍼시스',         model:'OT-1200',      serial:'',             status:'운용 중',  location:'본사 5층 회의실', manager:'',       date:'2022-04-01', price:1200000,  memo:'' },
-    { id:'IT-2025-005', name:'NAS 서버 DS920+',     category:'IT장비',   maker:'Synology',       model:'DS920+',       serial:'SYN2024XYZ',   status:'운용 중',  location:'서버실',          manager:'김민준', date:'2025-01-08', price:980000,   memo:'사내 파일 서버' },
-    { id:'IT-2025-006', name:'무선 AP Cisco',       category:'IT장비',   maker:'Cisco',          model:'Catalyst 9120',serial:'FCW2345ABCD',  status:'폐기 예정',location:'창고',            manager:'',       date:'2019-06-12', price:320000,   memo:'노후 장비' },
-  ];
-  let maintenance = [
-    { id:'WO-001', assetId:'IT-2025-003', assetName:'HP LaserJet Pro', type:'정기 점검', date:'2025-03-20', status:'진행 중', manager:'이수진', desc:'토너 잔량 확인 및 교체' },
-    { id:'WO-002', assetId:'EQ-2025-001', assetName:'CNC 밀링머신 #1', type:'부품 교체', date:'2025-04-01', status:'예정',    manager:'정대호', desc:'스핀들 베어링 교체' },
-    { id:'WO-003', assetId:'EQ-2025-002', assetName:'지게차 3.5톤',    type:'정기 점검', date:'2025-03-25', status:'예정',    manager:'최성훈', desc:'분기 정기 점검' },
-  ];
-  let activities = [
-    { type:'green', text:'<strong>IT-2025-005 NAS DS920+</strong> 자산이 등록되었습니다',        time:'오늘 09:21' },
-    { type:'amber', text:'<strong>IT-2025-003 HP LaserJet Pro</strong> 상태가 점검 중으로 변경', time:'오늘 08:55' },
-    { type:'blue',  text:'<strong>IT-2025-004 아이패드 Pro</strong> 위치가 창고로 이전',          time:'어제 17:30' },
-    { type:'red',   text:'<strong>IT-2025-006 Cisco AP</strong> 폐기 예정으로 분류',              time:'어제 14:10' },
-    { type:'green', text:'<strong>EQ-2025-001 CNC 밀링머신</strong> 분기 점검 완료',              time:'3일 전' },
-  ];
-  let idCounter = 10, currentPage = 1;
-  const PAGE_SIZE = 7;
-  let editingId = null;
-
-  // ── Nav 이벤트 바인딩 ──
-  const pageTitles = { dashboard:'대시보드', assets:'자산 목록', register:'자산 등록', maintenance:'유지보수', reports:'보고서' };
-
-  document.querySelectorAll('.nav-item[data-page]').forEach(item => {
-    item.addEventListener('click', () => navigate(item.dataset.page, item));
-  });
-  document.getElementById('btn-topbar-register').addEventListener('click', () => navigate('register', document.getElementById('nav-register')));
-  document.querySelector('.logout-btn').addEventListener('click', doLogout);
-
-  // ── 모달 버튼 ──
-  document.getElementById('modalSaveBtn').addEventListener('click', saveModal);
-  document.querySelectorAll('.modal-close').forEach(btn => {
-    btn.addEventListener('click', () => btn.closest('.modal-overlay').classList.remove('open'));
-  });
-  document.querySelectorAll('.modal-overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-  });
-  document.getElementById('btn-table-register').addEventListener('click', () => openModal('add'));
-  document.getElementById('btn-wo-add').addEventListener('click', openMaintenanceModal);
-  document.querySelector('[data-action="save-maintenance"]').addEventListener('click', saveMaintenance);
-  document.querySelector('[data-action="close-maintenance"]').addEventListener('click', () => document.getElementById('maintenanceModal').classList.remove('open'));
-  document.querySelector('[data-action="export-csv"]').addEventListener('click', exportCSV);
-  document.getElementById('btn-reg-submit').addEventListener('click', registerAsset);
-  document.getElementById('btn-reg-clear').addEventListener('click', clearRegForm);
-  document.getElementById('searchInput').addEventListener('input', renderTable);
-  document.getElementById('statusFilter').addEventListener('change', renderTable);
-  document.getElementById('categoryFilter').addEventListener('change', renderTable);
-
-  // ── Navigate ──
-  function navigate(page, el) {
-    if (page === 'register' && !isAdmin()) { showToast('관리자만 접근할 수 있는 페이지입니다.', 'warn'); return; }
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
     document.getElementById('page-' + page).classList.add('active');
-    document.getElementById('pageTitle').textContent = pageTitles[page] || page;
-    if (el && !el.classList.contains('viewer-disabled')) el.classList.add('active');
+    document.getElementById('page-title').textContent = pageTitles[page] || page;
+    var navEl = document.querySelector('.nav-item[data-page="' + page + '"]');
+    if (navEl) navEl.classList.add('active');
     if (page === 'dashboard')   renderDashboard();
     if (page === 'assets')      renderTable();
     if (page === 'maintenance') renderMaintenance();
     if (page === 'reports')     renderReports();
   }
 
-  // ── Dashboard ──
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+    item.addEventListener('click', function() { navigate(item.dataset.page); });
+  });
+  document.getElementById('btn-topbar-reg').addEventListener('click', function() { navigate('register'); });
+  document.getElementById('btn-table-reg').addEventListener('click', function() { openAssetModal('add'); });
+
+  // ── 모달 닫기 ──
+  document.querySelectorAll('[data-close]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.getElementById(btn.dataset.close).classList.remove('open');
+    });
+  });
+  document.querySelectorAll('.modal-overlay').forEach(function(o) {
+    o.addEventListener('click', function(e) { if (e.target === o) o.classList.remove('open'); });
+  });
+
+  // ── 대시보드 ──
   function renderDashboard() {
-    animCount('stat-total',  assets.length);
-    animCount('stat-active', assets.filter(a => a.status === '운용 중').length);
-    animCount('stat-maint',  assets.filter(a => a.status === '점검 중').length);
-    animCount('stat-retire', assets.filter(a => a.status === '폐기 예정').length);
-    document.getElementById('activity-list').innerHTML = activities.slice(0,5).map(a => `
-      <div class="activity-item">
-        <div class="activity-dot ${a.type}"></div>
-        <div class="activity-text">${a.text}</div>
-        <div class="activity-time">${a.time}</div>
-      </div>`).join('');
-    const cats = {}, clr = { IT장비:'#6c63ff', 사무기기:'#3ecf8e', 생산설비:'#f5a623', 차량:'#60a5fa', 가구:'#f87171' };
-    assets.forEach(a => cats[a.category] = (cats[a.category] || 0) + 1);
-    const mx = Math.max(...Object.values(cats));
-    document.getElementById('dist-list').innerHTML = Object.entries(cats).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
-      <div class="dist-item"><div class="dist-label">${k}</div>
-      <div class="dist-bar-wrap"><div class="dist-bar" style="width:${v/mx*100}%;background:${clr[k]||'#6c63ff'}"></div></div>
-      <div class="dist-count">${v}</div></div>`).join('');
-  }
-  function animCount(id, t) {
-    const el = document.getElementById(id); let c = 0;
-    const s = setInterval(() => { c = Math.min(c + Math.ceil(t/20), t); el.textContent = c; if (c >= t) clearInterval(s); }, 30);
+    animNum('s-total',  assets.length);
+    animNum('s-active', assets.filter(function(a) { return a.status === '운용 중'; }).length);
+    animNum('s-maint',  assets.filter(function(a) { return a.status === '점검 중'; }).length);
+    animNum('s-retire', assets.filter(function(a) { return a.status === '폐기 예정'; }).length);
+
+    document.getElementById('activity-list').innerHTML = activities.slice(0,5).map(function(a) {
+      return '<div class="activity-item"><div class="activity-dot ' + a.type + '"></div><div class="activity-text">' + a.text + '</div><div class="activity-time">' + a.time + '</div></div>';
+    }).join('');
+
+    var cats = {}, clr = { 'IT장비':'#6c63ff', '사무기기':'#3ecf8e', '생산설비':'#f5a623', '차량':'#60a5fa', '가구':'#f87171' };
+    assets.forEach(function(a) { cats[a.category] = (cats[a.category] || 0) + 1; });
+    var mx = Math.max.apply(null, Object.values(cats));
+    document.getElementById('dist-list').innerHTML = Object.entries(cats).sort(function(a,b) { return b[1]-a[1]; }).map(function(kv) {
+      return '<div class="dist-item"><div class="dist-label">' + kv[0] + '</div><div class="dist-bar-wrap"><div class="dist-bar" style="width:' + (kv[1]/mx*100) + '%;background:' + (clr[kv[0]] || '#6c63ff') + '"></div></div><div class="dist-count">' + kv[1] + '</div></div>';
+    }).join('');
   }
 
-  // ── Table ──
+  function animNum(id, target) {
+    var el = document.getElementById(id), cur = 0;
+    var t = setInterval(function() {
+      cur = Math.min(cur + Math.ceil(target / 20), target);
+      el.textContent = cur;
+      if (cur >= target) clearInterval(t);
+    }, 30);
+  }
+
+  // ── 자산 테이블 ──
   function sBadge(s) {
-    const m = { '운용 중':'green', '점검 중':'amber', '유휴':'blue', '폐기 예정':'red' };
-    return `<span class="badge badge-${m[s]||'gray'}">${s}</span>`;
+    var m = { '운용 중':'green', '점검 중':'amber', '유휴':'blue', '폐기 예정':'red' };
+    return '<span class="badge badge-' + (m[s] || 'gray') + '">' + s + '</span>';
   }
+
   function renderTable() {
-    const q  = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    const st = document.getElementById('statusFilter')?.value   || '';
-    const ct = document.getElementById('categoryFilter')?.value || '';
-    const fil = assets.filter(a =>
-      (!q  || a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q)) &&
-      (!st || a.status   === st) && (!ct || a.category === ct));
-    const total = fil.length, pages = Math.ceil(total / PAGE_SIZE) || 1;
-    currentPage = Math.min(currentPage, pages);
-    const slice = fil.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
-    document.getElementById('pageInfo').textContent = `총 ${total}개 자산`;
-    document.getElementById('assetTableBody').innerHTML = slice.map(a => `
-      <tr data-id="${a.id}" class="asset-row">
-        <td class="asset-id">${a.id}</td>
-        <td><div class="asset-name">${a.name}<small>${a.maker} ${a.model}</small></div></td>
-        <td>${a.category}</td><td>${sBadge(a.status)}</td>
-        <td>${a.location||'-'}</td><td>${a.manager||'-'}</td>
-        <td style="font-family:var(--mono);font-size:12px;">${a.date}</td>
-        <td><button class="action-btn edit-btn" data-id="${a.id}" ${!isAdmin()?'disabled title="관리자만 수정 가능"':''}>수정</button></td>
-      </tr>`).join('') || `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">자산이 없습니다</td></tr>`;
-
-    document.querySelectorAll('.asset-row').forEach(row => {
-      row.addEventListener('click', e => { if (!e.target.classList.contains('edit-btn')) openDetail(row.dataset.id); });
+    var q  = (document.getElementById('search-input').value || '').toLowerCase();
+    var st = document.getElementById('status-filter').value;
+    var ct = document.getElementById('category-filter').value;
+    var fil = assets.filter(function(a) {
+      return (!q  || a.name.toLowerCase().indexOf(q) > -1 || a.id.toLowerCase().indexOf(q) > -1) &&
+             (!st || a.status === st) && (!ct || a.category === ct);
     });
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', e => { e.stopPropagation(); if (isAdmin()) openModal('edit', btn.dataset.id); });
+    var total = fil.length, pages = Math.ceil(total / PAGE) || 1;
+    curPage = Math.min(curPage, pages);
+    var slice = fil.slice((curPage-1)*PAGE, curPage*PAGE);
+
+    document.getElementById('page-info').textContent = '총 ' + total + '개 자산';
+    document.getElementById('asset-tbody').innerHTML = slice.map(function(a) {
+      return '<tr data-id="' + a.id + '" class="asset-row">' +
+        '<td class="asset-id">' + a.id + '</td>' +
+        '<td><div class="asset-name">' + a.name + '<small>' + a.maker + ' ' + a.model + '</small></div></td>' +
+        '<td>' + a.category + '</td><td>' + sBadge(a.status) + '</td>' +
+        '<td>' + (a.location || '-') + '</td><td>' + (a.manager || '-') + '</td>' +
+        '<td style="font-family:var(--mono);font-size:12px;">' + a.date + '</td>' +
+        '<td><button class="action-btn edit-btn" data-id="' + a.id + '">수정</button></td>' +
+        '</tr>';
+    }).join('') || '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">자산이 없습니다</td></tr>';
+
+    document.querySelectorAll('.asset-row').forEach(function(row) {
+      row.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('edit-btn')) openDetail(row.dataset.id);
+      });
+    });
+    document.querySelectorAll('.edit-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openAssetModal('edit', btn.dataset.id);
+      });
     });
 
-    const pb = document.getElementById('pageBtns'); pb.innerHTML = '';
-    for (let i = 1; i <= pages; i++) {
-      const b = document.createElement('button');
-      b.className = 'page-btn' + (i === currentPage ? ' active' : '');
-      b.textContent = i;
-      b.addEventListener('click', () => { currentPage = i; renderTable(); });
-      pb.appendChild(b);
+    var pb = document.getElementById('page-btns');
+    pb.innerHTML = '';
+    for (var i = 1; i <= pages; i++) {
+      (function(pg) {
+        var b = document.createElement('button');
+        b.className = 'page-btn' + (pg === curPage ? ' active' : '');
+        b.textContent = pg;
+        b.addEventListener('click', function() { curPage = pg; renderTable(); });
+        pb.appendChild(b);
+      })(i);
     }
   }
 
-  // ── Detail ──
+  document.getElementById('search-input').addEventListener('input', function() { curPage=1; renderTable(); });
+  document.getElementById('status-filter').addEventListener('change', function() { curPage=1; renderTable(); });
+  document.getElementById('category-filter').addEventListener('change', function() { curPage=1; renderTable(); });
+
+  // ── 자산 상세 ──
   function openDetail(id) {
-    const a = assets.find(x => x.id === id); if (!a) return;
-    document.getElementById('detailBody').innerHTML = `
-      <div class="detail-row"><div class="detail-key">자산번호</div><div class="detail-val" style="font-family:var(--mono)">${a.id}</div></div>
-      <div class="detail-row"><div class="detail-key">자산명</div><div class="detail-val" style="font-weight:500">${a.name}</div></div>
-      <div class="detail-row"><div class="detail-key">카테고리</div><div class="detail-val">${a.category}</div></div>
-      <div class="detail-row"><div class="detail-key">제조사 / 모델</div><div class="detail-val">${a.maker} ${a.model}</div></div>
-      <div class="detail-row"><div class="detail-key">시리얼번호</div><div class="detail-val" style="font-family:var(--mono)">${a.serial||'-'}</div></div>
-      <div class="detail-row"><div class="detail-key">상태</div><div class="detail-val">${sBadge(a.status)}</div></div>
-      <div class="detail-row"><div class="detail-key">위치</div><div class="detail-val">${a.location||'-'}</div></div>
-      <div class="detail-row"><div class="detail-key">담당자</div><div class="detail-val">${a.manager||'-'}</div></div>
-      <div class="detail-row"><div class="detail-key">취득일</div><div class="detail-val">${a.date}</div></div>
-      <div class="detail-row"><div class="detail-key">취득 금액</div><div class="detail-val">${a.price ? Number(a.price).toLocaleString()+'원' : '-'}</div></div>
-      <div class="detail-row"><div class="detail-key">메모</div><div class="detail-val">${a.memo||'-'}</div></div>`;
-    const footer = document.getElementById('detailFooter');
-    footer.innerHTML = isAdmin()
-      ? `<button class="btn btn-danger" id="btn-del">삭제</button>
-         <button class="btn btn-ghost" id="btn-det-close">닫기</button>
-         <button class="btn btn-primary" id="btn-det-edit">수정</button>`
-      : `<button class="btn btn-ghost" id="btn-det-close">닫기</button>`;
-    document.getElementById('btn-det-close').addEventListener('click', closeDetail);
-    if (isAdmin()) {
-      document.getElementById('btn-del').addEventListener('click', () => deleteAsset(id));
-      document.getElementById('btn-det-edit').addEventListener('click', () => { closeDetail(); openModal('edit', id); });
-    }
-    document.getElementById('detailModal').classList.add('open');
-  }
-  function closeDetail() { document.getElementById('detailModal').classList.remove('open'); }
+    var a = assets.find(function(x) { return x.id === id; });
+    if (!a) return;
+    document.getElementById('modal-detail-body').innerHTML =
+      row('자산번호', '<span style="font-family:var(--mono)">' + a.id + '</span>') +
+      row('자산명', '<strong>' + a.name + '</strong>') +
+      row('카테고리', a.category) +
+      row('제조사 / 모델', a.maker + ' ' + a.model) +
+      row('시리얼번호', '<span style="font-family:var(--mono)">' + (a.serial || '-') + '</span>') +
+      row('상태', sBadge(a.status)) +
+      row('위치', a.location || '-') +
+      row('담당자', a.manager || '-') +
+      row('취득일', a.date) +
+      row('취득 금액', a.price ? Number(a.price).toLocaleString() + '원' : '-') +
+      row('메모', a.memo || '-');
 
-  // ── Modal ──
-  function openModal(mode, id) {
-    if (!guard()) return;
-    editingId = mode === 'edit' ? id : null;
-    document.getElementById('modalTitle').textContent    = mode === 'edit' ? '자산 수정' : '자산 등록';
-    document.getElementById('modalSaveBtn').textContent  = mode === 'edit' ? '저장' : '등록';
-    const flds = ['m-name','m-maker','m-model','m-serial','m-location','m-manager','m-memo'];
+    var footer = document.getElementById('modal-detail-footer');
+    footer.innerHTML = '<button class="btn btn-danger" id="btn-del">삭제</button>' +
+      '<button class="btn btn-ghost" data-close="modal-detail">닫기</button>' +
+      '<button class="btn btn-primary" id="btn-det-edit">수정</button>';
+
+    document.getElementById('btn-del').addEventListener('click', function() { deleteAsset(id); });
+    document.getElementById('btn-det-edit').addEventListener('click', function() {
+      document.getElementById('modal-detail').classList.remove('open');
+      openAssetModal('edit', id);
+    });
+    document.querySelector('#modal-detail-footer [data-close]').addEventListener('click', function() {
+      document.getElementById('modal-detail').classList.remove('open');
+    });
+    document.getElementById('modal-detail').classList.add('open');
+  }
+
+  function row(k, v) {
+    return '<div class="detail-row"><div class="detail-key">' + k + '</div><div class="detail-val">' + v + '</div></div>';
+  }
+
+  // ── 자산 모달 ──
+  function openAssetModal(mode, id) {
+    editId = mode === 'edit' ? id : null;
+    document.getElementById('modal-asset-title').textContent = mode === 'edit' ? '자산 수정' : '자산 등록';
+    document.getElementById('btn-modal-save').textContent = mode === 'edit' ? '저장' : '등록';
+
+    var flds = ['m-name','m-maker','m-model','m-serial','m-location','m-manager','m-memo'];
     if (mode === 'edit' && id) {
-      const a = assets.find(x => x.id === id);
-      if (a) { document.getElementById('m-name').value=a.name; document.getElementById('m-category').value=a.category; document.getElementById('m-maker').value=a.maker; document.getElementById('m-model').value=a.model; document.getElementById('m-serial').value=a.serial; document.getElementById('m-status').value=a.status; document.getElementById('m-location').value=a.location; document.getElementById('m-manager').value=a.manager; document.getElementById('m-date').value=a.date; document.getElementById('m-price').value=a.price; document.getElementById('m-memo').value=a.memo; }
+      var a = assets.find(function(x) { return x.id === id; });
+      if (a) {
+        document.getElementById('m-name').value    = a.name;
+        document.getElementById('m-cat').value     = a.category;
+        document.getElementById('m-maker').value   = a.maker;
+        document.getElementById('m-model').value   = a.model;
+        document.getElementById('m-serial').value  = a.serial;
+        document.getElementById('m-status').value  = a.status;
+        document.getElementById('m-location').value= a.location;
+        document.getElementById('m-manager').value = a.manager;
+        document.getElementById('m-date').value    = a.date;
+        document.getElementById('m-price').value   = a.price;
+        document.getElementById('m-memo').value    = a.memo;
+      }
     } else {
-      flds.forEach(f => document.getElementById(f).value = '');
-      document.getElementById('m-category').value=''; document.getElementById('m-status').value='운용 중'; document.getElementById('m-date').value=''; document.getElementById('m-price').value='';
+      flds.forEach(function(f) { document.getElementById(f).value = ''; });
+      document.getElementById('m-cat').value    = '';
+      document.getElementById('m-status').value = '운용 중';
+      document.getElementById('m-date').value   = '';
+      document.getElementById('m-price').value  = '';
     }
-    document.getElementById('assetModal').classList.add('open');
+    document.getElementById('modal-asset').classList.add('open');
   }
-  function closeModal() { document.getElementById('assetModal').classList.remove('open'); }
 
-  function saveModal() {
-    if (!guard()) return;
-    const name = document.getElementById('m-name').value.trim();
-    const cat  = document.getElementById('m-category').value;
+  document.getElementById('btn-modal-save').addEventListener('click', function() {
+    var name = document.getElementById('m-name').value.trim();
+    var cat  = document.getElementById('m-cat').value;
     if (!name || !cat) { alert('자산명과 카테고리는 필수입니다.'); return; }
-    const data = { name, category:cat, maker:document.getElementById('m-maker').value, model:document.getElementById('m-model').value, serial:document.getElementById('m-serial').value, status:document.getElementById('m-status').value, location:document.getElementById('m-location').value, manager:document.getElementById('m-manager').value, date:document.getElementById('m-date').value, price:document.getElementById('m-price').value, memo:document.getElementById('m-memo').value };
-    if (editingId) {
-      const idx = assets.findIndex(a => a.id === editingId);
-      if (idx !== -1) assets[idx] = { ...assets[idx], ...data };
-      activities.unshift({ type:'blue', text:`<strong>${editingId} ${name}</strong> 정보가 수정되었습니다`, time:'방금' });
-      showToast('자산이 수정되었습니다.');
+    var data = {
+      name:name, category:cat,
+      maker:document.getElementById('m-maker').value,
+      model:document.getElementById('m-model').value,
+      serial:document.getElementById('m-serial').value,
+      status:document.getElementById('m-status').value,
+      location:document.getElementById('m-location').value,
+      manager:document.getElementById('m-manager').value,
+      date:document.getElementById('m-date').value,
+      price:document.getElementById('m-price').value,
+      memo:document.getElementById('m-memo').value
+    };
+    if (editId) {
+      var idx = assets.findIndex(function(a) { return a.id === editId; });
+      if (idx > -1) assets[idx] = Object.assign({}, assets[idx], data);
+      activities.unshift({ type:'blue', text:'<strong>' + editId + ' ' + name + '</strong> 정보가 수정되었습니다', time:'방금' });
+      toast('자산이 수정되었습니다.');
     } else {
-      const pfx = cat==='IT장비'?'IT':cat==='생산설비'?'EQ':cat==='차량'?'VH':'EQ';
-      const nid = `${pfx}-${new Date().getFullYear()}-${String(idCounter++).padStart(3,'0')}`;
-      assets.push({ id:nid, ...data });
-      activities.unshift({ type:'green', text:`<strong>${nid} ${name}</strong> 자산이 등록되었습니다`, time:'방금' });
-      showToast(`${name} 자산이 등록되었습니다.`);
+      var pfx = cat==='IT장비'?'IT':cat==='생산설비'?'EQ':cat==='차량'?'VH':'EQ';
+      var nid = pfx + '-' + new Date().getFullYear() + '-' + String(idCnt++).padStart(3,'0');
+      assets.push(Object.assign({ id:nid }, data));
+      activities.unshift({ type:'green', text:'<strong>' + nid + ' ' + name + '</strong> 자산이 등록되었습니다', time:'방금' });
+      toast(name + ' 자산이 등록되었습니다.');
     }
-    closeModal(); renderTable();
-  }
+    document.getElementById('modal-asset').classList.remove('open');
+    renderTable();
+  });
 
-  function deleteAsset(id) {
-    if (!guard()) return;
-    if (!confirm('이 자산을 삭제하시겠습니까?')) return;
-    const a = assets.find(x => x.id === id);
-    assets = assets.filter(x => x.id !== id);
-    closeDetail(); renderTable();
-    showToast(`${a?.name} 자산이 삭제되었습니다.`);
-  }
-
-  // ── Register ──
-  function registerAsset() {
-    if (!guard()) return;
-    const name = document.getElementById('reg-name').value.trim();
-    const cat  = document.getElementById('reg-category').value;
+  // ── 자산 등록 페이지 ──
+  document.getElementById('btn-reg-submit').addEventListener('click', function() {
+    var name = document.getElementById('r-name').value.trim();
+    var cat  = document.getElementById('r-cat').value;
     if (!name || !cat) { alert('자산명과 카테고리는 필수입니다.'); return; }
-    const data = { name, category:cat, maker:document.getElementById('reg-maker').value, model:document.getElementById('reg-model').value, serial:document.getElementById('reg-serial').value, status:document.getElementById('reg-status').value, location:document.getElementById('reg-location').value, manager:document.getElementById('reg-manager').value, date:document.getElementById('reg-date').value, price:document.getElementById('reg-price').value, memo:document.getElementById('reg-memo').value };
-    const pfx = cat==='IT장비'?'IT':cat==='생산설비'?'EQ':cat==='차량'?'VH':'EQ';
-    const nid = `${pfx}-${new Date().getFullYear()}-${String(idCounter++).padStart(3,'0')}`;
-    assets.push({ id:nid, ...data });
-    activities.unshift({ type:'green', text:`<strong>${nid} ${name}</strong> 자산이 등록되었습니다`, time:'방금' });
-    showToast(`${name} 자산이 등록되었습니다. (${nid})`);
+    var data = {
+      name:name, category:cat,
+      maker:document.getElementById('r-maker').value,
+      model:document.getElementById('r-model').value,
+      serial:document.getElementById('r-serial').value,
+      status:document.getElementById('r-status').value,
+      location:document.getElementById('r-location').value,
+      manager:document.getElementById('r-manager').value,
+      date:document.getElementById('r-date').value,
+      price:document.getElementById('r-price').value,
+      memo:document.getElementById('r-memo').value
+    };
+    var pfx = cat==='IT장비'?'IT':cat==='생산설비'?'EQ':cat==='차량'?'VH':'EQ';
+    var nid = pfx + '-' + new Date().getFullYear() + '-' + String(idCnt++).padStart(3,'0');
+    assets.push(Object.assign({ id:nid }, data));
+    activities.unshift({ type:'green', text:'<strong>' + nid + ' ' + name + '</strong> 자산이 등록되었습니다', time:'방금' });
+    toast(name + ' 자산이 등록되었습니다. (' + nid + ')');
     clearRegForm();
-    navigate('assets', document.querySelector('.nav-item[data-page="assets"]'));
-  }
+    navigate('assets');
+  });
+
+  document.getElementById('btn-reg-clear').addEventListener('click', clearRegForm);
   function clearRegForm() {
-    ['reg-name','reg-maker','reg-model','reg-serial','reg-location','reg-manager','reg-memo'].forEach(f => document.getElementById(f).value = '');
-    document.getElementById('reg-category').value=''; document.getElementById('reg-status').value='운용 중'; document.getElementById('reg-date').value=''; document.getElementById('reg-price').value='';
+    ['r-name','r-maker','r-model','r-serial','r-location','r-manager','r-memo'].forEach(function(f) { document.getElementById(f).value=''; });
+    document.getElementById('r-cat').value='';
+    document.getElementById('r-status').value='운용 중';
+    document.getElementById('r-date').value='';
+    document.getElementById('r-price').value='';
   }
 
-  // ── Maintenance ──
+  // ── 자산 삭제 ──
+  function deleteAsset(id) {
+    if (!confirm('이 자산을 삭제하시겠습니까?')) return;
+    var a = assets.find(function(x) { return x.id===id; });
+    assets = assets.filter(function(x) { return x.id !== id; });
+    document.getElementById('modal-detail').classList.remove('open');
+    renderTable();
+    toast((a ? a.name : '') + ' 자산이 삭제되었습니다.');
+  }
+
+  // ── 유지보수 ──
   function renderMaintenance() {
-    document.getElementById('maintenanceBody').innerHTML = maintenance.map(m => `
-      <tr><td class="asset-id">${m.id}</td><td>${m.assetName}</td><td>${m.type}</td>
-      <td style="font-family:var(--mono);font-size:12px;">${m.date}</td>
-      <td>${m.status==='진행 중'?'<span class="badge badge-amber">진행 중</span>':'<span class="badge badge-blue">예정</span>'}</td>
-      <td>${m.manager}</td></tr>`).join('') || `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">등록된 작업이 없습니다</td></tr>`;
-  }
-  function openMaintenanceModal() {
-    if (!guard()) return;
-    document.getElementById('mt-asset').innerHTML = assets.map(a => `<option value="${a.id}">${a.id} - ${a.name}</option>`).join('');
-    ['mt-date','mt-manager','mt-desc'].forEach(f => document.getElementById(f).value = '');
-    document.getElementById('maintenanceModal').classList.add('open');
-  }
-  function saveMaintenance() {
-    if (!guard()) return;
-    const sel = document.getElementById('mt-asset');
-    const assetName = sel.options[sel.selectedIndex].text.split(' - ')[1];
-    maintenance.push({ id:`WO-${String(maintenance.length+1).padStart(3,'0')}`, assetId:sel.value, assetName, type:document.getElementById('mt-type').value, date:document.getElementById('mt-date').value, status:'예정', manager:document.getElementById('mt-manager').value, desc:document.getElementById('mt-desc').value });
-    document.getElementById('maintenanceModal').classList.remove('open');
-    renderMaintenance(); showToast('유지보수 작업이 등록되었습니다.');
+    document.getElementById('maint-tbody').innerHTML = maintenance.map(function(m) {
+      return '<tr><td class="asset-id">' + m.id + '</td><td>' + m.assetName + '</td><td>' + m.type + '</td>' +
+        '<td style="font-family:var(--mono);font-size:12px;">' + m.date + '</td>' +
+        '<td>' + (m.status==='진행 중' ? '<span class="badge badge-amber">진행 중</span>' : '<span class="badge badge-blue">예정</span>') + '</td>' +
+        '<td>' + m.manager + '</td></tr>';
+    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">등록된 작업이 없습니다</td></tr>';
   }
 
-  // ── Reports ──
+  document.getElementById('btn-wo-add').addEventListener('click', function() {
+    document.getElementById('mt-asset').innerHTML = assets.map(function(a) {
+      return '<option value="' + a.id + '">' + a.id + ' - ' + a.name + '</option>';
+    }).join('');
+    ['mt-date','mt-manager','mt-desc'].forEach(function(f) { document.getElementById(f).value=''; });
+    document.getElementById('modal-maint').classList.add('open');
+  });
+
+  document.getElementById('btn-maint-save').addEventListener('click', function() {
+    var sel = document.getElementById('mt-asset');
+    var assetName = sel.options[sel.selectedIndex].text.split(' - ')[1];
+    var woId = 'WO-' + String(maintenance.length+1).padStart(3,'0');
+    maintenance.push({
+      id:woId, assetId:sel.value, assetName:assetName,
+      type:document.getElementById('mt-type').value,
+      date:document.getElementById('mt-date').value,
+      status:'예정',
+      manager:document.getElementById('mt-manager').value,
+      desc:document.getElementById('mt-desc').value
+    });
+    document.getElementById('modal-maint').classList.remove('open');
+    renderMaintenance();
+    toast('유지보수 작업이 등록되었습니다.');
+  });
+
+  // ── 보고서 ──
   function renderReports() {
-    const sm = {}; assets.forEach(a => sm[a.status] = (sm[a.status]||0)+1);
-    const tv = assets.reduce((s,a) => s + (Number(a.price)||0), 0);
-    document.getElementById('report-summary').innerHTML = `
-      <div class="detail-row"><div class="detail-key">전체 자산 수</div><div class="detail-val" style="font-family:var(--mono);font-weight:600">${assets.length}개</div></div>
-      ${Object.entries(sm).map(([k,v])=>`<div class="detail-row"><div class="detail-key">${k}</div><div class="detail-val">${v}개</div></div>`).join('')}
-      <div class="detail-row"><div class="detail-key">자산 총 취득가</div><div class="detail-val" style="font-family:var(--mono);font-weight:600">${tv.toLocaleString()}원</div></div>
-      <div class="detail-row"><div class="detail-key">유지보수 작업</div><div class="detail-val">${maintenance.length}건</div></div>`;
-    const cats = {}, clr = { IT장비:'#6c63ff', 사무기기:'#3ecf8e', 생산설비:'#f5a623', 차량:'#60a5fa', 가구:'#f87171' };
-    assets.forEach(a => cats[a.category] = (cats[a.category]||0)+1);
-    const mx = Math.max(...Object.values(cats));
-    document.getElementById('report-category').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `
-      <div class="dist-item"><div class="dist-label">${k}</div>
-      <div class="dist-bar-wrap"><div class="dist-bar" style="width:${v/mx*100}%;background:${clr[k]||'#6c63ff'}"></div></div>
-      <div class="dist-count">${v}</div></div>`).join('');
+    var sm = {}, tv = 0;
+    assets.forEach(function(a) { sm[a.status]=(sm[a.status]||0)+1; tv+=(Number(a.price)||0); });
+    document.getElementById('report-summary').innerHTML =
+      row('전체 자산 수', '<span style="font-family:var(--mono);font-weight:600">' + assets.length + '개</span>') +
+      Object.entries(sm).map(function(kv) { return row(kv[0], kv[1]+'개'); }).join('') +
+      row('자산 총 취득가', '<span style="font-family:var(--mono);font-weight:600">' + tv.toLocaleString() + '원</span>') +
+      row('유지보수 작업', maintenance.length + '건');
+
+    var cats = {}, clr = { 'IT장비':'#6c63ff', '사무기기':'#3ecf8e', '생산설비':'#f5a623', '차량':'#60a5fa', '가구':'#f87171' };
+    assets.forEach(function(a) { cats[a.category]=(cats[a.category]||0)+1; });
+    var mx = Math.max.apply(null, Object.values(cats));
+    document.getElementById('report-category').innerHTML = Object.entries(cats).sort(function(a,b) { return b[1]-a[1]; }).map(function(kv) {
+      return '<div class="dist-item"><div class="dist-label">' + kv[0] + '</div><div class="dist-bar-wrap"><div class="dist-bar" style="width:' + (kv[1]/mx*100) + '%;background:' + (clr[kv[0]]||'#6c63ff') + '"></div></div><div class="dist-count">' + kv[1] + '</div></div>';
+    }).join('');
   }
 
-  function exportCSV() {
-    const h = ['자산번호','자산명','카테고리','제조사','모델','시리얼번호','상태','위치','담당자','취득일','취득금액','메모'];
-    const r = assets.map(a => [a.id,a.name,a.category,a.maker,a.model,a.serial,a.status,a.location,a.manager,a.date,a.price,a.memo].map(v=>`"${v||''}"`).join(','));
-    const csv = '\uFEFF' + [h.join(','),...r].join('\n');
-    const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const el = document.createElement('a'); el.href=url; el.download='자산목록.csv'; el.click();
-    showToast('CSV 파일이 다운로드되었습니다.');
-  }
+  document.getElementById('btn-csv').addEventListener('click', function() {
+    var h = ['자산번호','자산명','카테고리','제조사','모델','시리얼번호','상태','위치','담당자','취득일','취득금액','메모'];
+    var r = assets.map(function(a) {
+      return [a.id,a.name,a.category,a.maker,a.model,a.serial,a.status,a.location,a.manager,a.date,a.price,a.memo].map(function(v) { return '"'+(v||'')+'"'; }).join(',');
+    });
+    var csv = '\uFEFF' + [h.join(',')].concat(r).join('\n');
+    var blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var el   = document.createElement('a'); el.href=url; el.download='자산목록.csv'; el.click();
+    toast('CSV 파일이 다운로드되었습니다.');
+  });
 
-  // ── Toast ──
-  function showToast(msg, type='success') {
-    const t = document.getElementById('toast'), ic = document.getElementById('toast-icon');
-    document.getElementById('toastMsg').textContent = msg;
-    ic.className = 'toast-icon ' + (type==='warn' ? 'toast-warn' : 'toast-success');
-    ic.textContent = type==='warn' ? '!' : '✓';
+  // ── 비밀번호 변경 ──
+  document.getElementById('btn-change-pw').addEventListener('click', function() {
+    ['pw-cur','pw-new','pw-cfm'].forEach(function(f) { document.getElementById(f).value=''; });
+    document.getElementById('pw-error').classList.remove('show');
+    document.getElementById('modal-pw').classList.add('open');
+  });
+
+  document.getElementById('btn-pw-save').addEventListener('click', function() {
+    var cur = document.getElementById('pw-cur').value;
+    var nxt = document.getElementById('pw-new').value;
+    var cfm = document.getElementById('pw-cfm').value;
+    var err = document.getElementById('pw-error');
+    if (cur !== adminPw) { err.textContent='현재 비밀번호가 올바르지 않습니다.'; err.classList.add('show'); return; }
+    if (nxt.length < 6)  { err.textContent='새 비밀번호는 6자 이상이어야 합니다.'; err.classList.add('show'); return; }
+    if (nxt !== cfm)     { err.textContent='새 비밀번호가 일치하지 않습니다.'; err.classList.add('show'); return; }
+    adminPw = nxt;
+    document.getElementById('modal-pw').classList.remove('open');
+    toast('비밀번호가 변경되었습니다.');
+  });
+
+  // ── 토스트 ──
+  function toast(msg, type) {
+    var t  = document.getElementById('toast');
+    var ic = document.getElementById('toast-icon');
+    document.getElementById('toast-msg').textContent = msg;
+    ic.className = 'toast-icon ' + (type === 'warn' ? 'toast-warn' : 'toast-success');
+    ic.textContent = type === 'warn' ? '!' : '✓';
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
+    setTimeout(function() { t.classList.remove('show'); }, 3200);
   }
 
-}); // end DOMContentLoaded
-
-
+});
 </script>
-
 </body>
 </html>
