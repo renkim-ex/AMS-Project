@@ -198,6 +198,21 @@ select.form-control{cursor:pointer;}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* 내보내기 드롭다운 */
+.export-opt{display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;background:transparent;border:none;color:var(--text2);font-size:13px;font-family:var(--font);cursor:pointer;text-align:left;transition:background 0.12s;}
+.export-opt:hover{background:var(--surface3);color:var(--text);}
+.export-opt+.export-opt{border-top:1px solid var(--border);}
+/* 담당자 자동완성 */
+.ac-wrap { position:relative; }
+.ac-dropdown { display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); box-shadow:0 8px 24px rgba(0,0,0,0.3); z-index:200; max-height:200px; overflow-y:auto; }
+.ac-dropdown.open { display:block; }
+.ac-item { padding:9px 14px; font-size:13px; cursor:pointer; color:var(--text2); transition:background 0.1s; border-bottom:1px solid var(--border); }
+.ac-item:last-child { border-bottom:none; }
+.ac-item:hover, .ac-item.selected { background:var(--accent-dim); color:var(--text); }
+.ac-item-name { font-weight:500; color:var(--text); }
+.ac-item-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.ac-empty { padding:12px 14px; font-size:13px; color:var(--text3); text-align:center; }
 </style>
 </head>
 <body>
@@ -251,6 +266,10 @@ select.form-control{cursor:pointer;}
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
         자산 등록
       </div>
+      <div class="nav-item" data-page="bulk">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        일괄 등록
+      </div>
       <div class="nav-section-label">운영</div>
       <div class="nav-item" data-page="maintenance">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -260,14 +279,25 @@ select.form-control{cursor:pointer;}
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         보고서
       </div>
+      <div class="nav-item" data-page="backup">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+        백업 / 복원
+      </div>
+      <div class="nav-item" id="nav-accounts" data-page="accounts" style="display:none;">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        계정 관리
+      </div>
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user">
         <div class="sidebar-avatar">B</div>
         <div>
-          <div class="sidebar-user-name">관리자</div>
-          <div class="sidebar-user-role">buzzasset</div>
+          <div class="sidebar-user-name" id="sb-username">관리자</div>
+          <div class="sidebar-user-role" id="sb-userid">buzzasset</div>
         </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <span id="sb-badge" style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:10px;display:inline-block;"></span>
       </div>
       <div class="sidebar-btns">
         <button class="sidebar-btn" id="btn-change-pw">
@@ -325,6 +355,26 @@ select.form-control{cursor:pointer;}
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             자산 등록
           </button>
+          <div style="position:relative;display:inline-block;">
+            <button class="btn btn-ghost" id="btn-export-toggle">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              내보내기 ▾
+            </button>
+            <div id="export-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:50;min-width:180px;overflow:hidden;">
+              <button class="export-opt" id="btn-dl-csv">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                CSV 다운로드
+              </button>
+              <button class="export-opt" id="btn-dl-xlsx">
+                <svg width="14" height="14" fill="none" stroke="#1D6F42" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Excel(.xlsx) 다운로드
+              </button>
+              <button class="export-opt" id="btn-open-sheets">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" fill="#0F9D58" opacity="0.15"/><path d="M3 9h18M3 15h18M9 3v18" stroke="#0F9D58" stroke-width="2"/></svg>
+                Google Sheets로 열기
+              </button>
+            </div>
+          </div>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>자산번호</th><th>자산명</th><th>카테고리</th><th>상태</th><th>위치</th><th>담당자</th><th>취득일</th><th>관리</th></tr></thead>
@@ -347,7 +397,13 @@ select.form-control{cursor:pointer;}
                 <div class="form-group"><label class="form-label">시리얼번호</label><input class="form-control" type="text" id="r-serial"></div>
                 <div class="form-group"><label class="form-label">상태</label><select class="form-control" id="r-status"><option>운용 중</option><option>유휴</option><option>점검 중</option><option>폐기 예정</option></select></div>
                 <div class="form-group"><label class="form-label">위치</label><input class="form-control" type="text" id="r-location" placeholder="예: 본사 3층 개발팀"></div>
-                <div class="form-group"><label class="form-label">담당자</label><input class="form-control" type="text" id="r-manager"></div>
+                <div class="form-group">
+  <label class="form-label">담당자</label>
+  <div class="ac-wrap">
+    <input class="form-control" type="text" id="r-manager" placeholder="이름으로 검색..." autocomplete="off">
+    <div class="ac-dropdown" id="r-manager-dropdown"></div>
+  </div>
+</div>
                 <div class="form-group"><label class="form-label">취득일 *</label><input class="form-control" type="date" id="r-date"></div>
                 <div class="form-group"><label class="form-label">취득 금액 (원)</label><input class="form-control" type="number" id="r-price"></div>
                 <div class="form-group full"><label class="form-label">메모</label><textarea class="form-control" id="r-memo" rows="3" style="resize:vertical;"></textarea></div>
@@ -358,6 +414,99 @@ select.form-control{cursor:pointer;}
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 일괄 등록 -->
+      <div class="page" id="page-bulk">
+        <div style="max-width:860px;display:flex;flex-direction:column;gap:16px;">
+
+          <!-- 방법 1: Google Sheets -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Google Sheets에서 불러오기</span></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7;">
+                Google Sheets를 CSV로 웹에 게시한 후 링크를 입력하세요.<br>
+                <span style="color:var(--text3);">시트 메뉴 → 파일 → 공유 → 웹에 게시 → CSV 형식 선택 후 링크 복사</span>
+              </p>
+              <div style="display:flex;gap:8px;">
+                <input class="form-control" type="text" id="sheets-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" style="flex:1;">
+                <button class="btn btn-primary" id="btn-sheets-load">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  불러오기
+                </button>
+              </div>
+              <div id="sheets-error" style="display:none;margin-top:10px;padding:10px 14px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-sm);font-size:13px;color:var(--red);"></div>
+            </div>
+          </div>
+
+          <!-- 방법 2: CSV 파일 업로드 -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">CSV 파일 직접 업로드</span></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">
+                CSV 파일을 선택하거나 아래 영역으로 드래그하세요.
+              </p>
+              <div id="drop-zone" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;">
+                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text3);margin-bottom:10px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size:14px;color:var(--text2);margin-bottom:6px;">CSV 파일을 드래그하거나 클릭하여 선택</div>
+                <div style="font-size:12px;color:var(--text3);">.csv 파일만 지원합니다</div>
+                <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
+              </div>
+            </div>
+          </div>
+
+          <!-- 컬럼 가이드 -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Google Sheets 열 형식 가이드</span></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">아래 순서대로 열을 구성해 주세요. 첫 번째 행은 헤더(제목)로 자동 인식합니다.</p>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;font-size:12px;">
+                  <thead><tr>
+                    <th style="text-align:left;padding:8px 12px;background:var(--surface2);color:var(--text3);">열</th>
+                    <th style="text-align:left;padding:8px 12px;background:var(--surface2);color:var(--text3);">항목명</th>
+                    <th style="text-align:left;padding:8px 12px;background:var(--surface2);color:var(--text3);">필수</th>
+                    <th style="text-align:left;padding:8px 12px;background:var(--surface2);color:var(--text3);">예시</th>
+                  </tr></thead>
+                  <tbody id="guide-tbody">
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">A</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">자산명</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--red);">필수</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">MacBook Pro 14</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">B</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">카테고리</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--red);">필수</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">IT장비 / 사무기기 / 생산설비 / 차량 / 가구</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">C</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">제조사</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">Apple</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">D</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">모델명</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">MK183KH/A</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">E</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">시리얼번호</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">C02X1234ABCD</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">F</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">상태</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">운용 중 (기본값)</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">G</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">위치</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">본사 3층 개발팀</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">H</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">담당자</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">홍길동</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">I</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">취득일</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">2025-03-10</td></tr>
+                    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-family:var(--mono);">J</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">취득금액</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">선택</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">2800000</td></tr>
+                    <tr><td style="padding:7px 12px;color:var(--text3);font-family:var(--mono);">K</td><td style="padding:7px 12px;color:var(--text);">메모</td><td style="padding:7px 12px;color:var(--text3);">선택</td><td style="padding:7px 12px;color:var(--text3);">추가 설명</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 미리보기 -->
+          <div class="panel" id="preview-panel" style="display:none;">
+            <div class="panel-header">
+              <span class="panel-title">미리보기 <span id="preview-count" style="font-size:12px;color:var(--text3);font-weight:400;margin-left:6px;"></span></span>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-ghost" id="btn-preview-cancel">취소</button>
+                <button class="btn btn-primary" id="btn-preview-confirm">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  일괄 등록
+                </button>
+              </div>
+            </div>
+            <div class="panel-body" style="overflow-x:auto;padding:0;">
+              <table style="width:100%;font-size:12px;">
+                <thead><tr id="preview-head"></tr></thead>
+                <tbody id="preview-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -382,14 +531,176 @@ select.form-control{cursor:pointer;}
           <div class="panel"><div class="panel-header"><span class="panel-title">카테고리별 자산 수</span></div><div class="panel-body" id="report-category"></div></div>
           <div class="panel" style="grid-column:1/-1;">
             <div class="panel-header"><span class="panel-title">내보내기</span></div>
-            <div class="panel-body" style="display:flex;gap:10px;align-items:center;">
+            <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
               <button class="btn btn-ghost" id="btn-csv">
-                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
                 CSV 다운로드
               </button>
-              <span style="font-size:12px;color:var(--text3)">전체 자산 데이터를 CSV로 내보냅니다</span>
+              <button class="btn btn-ghost" id="btn-xlsx">
+                <svg width="13" height="13" fill="none" stroke="#1D6F42" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                Excel(.xlsx) 다운로드
+              </button>
+              <button class="btn btn-ghost" id="btn-sheets">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" fill="#0F9D58" opacity="0.2"/><path d="M3 9h18M3 15h18M9 3v18" stroke="#0F9D58" stroke-width="2"/></svg>
+                Google Sheets로 열기
+              </button>
+              <span style="font-size:12px;color:var(--text3);">현재 필터 적용 데이터 기준으로 내보냅니다</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 백업 / 복원 -->
+      <div class="page" id="page-backup">
+        <div style="max-width:760px;display:flex;flex-direction:column;gap:16px;">
+
+          <!-- 임직원 명단 연동 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">임직원 명단 연동</span>
+              <span id="emp-status" style="font-size:12px;color:var(--text3);"></span>
+            </div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7;">
+                임직원 명단이 담긴 Google Sheets의 CSV 공개 링크를 등록하세요.<br>
+                자산 등록·수정 시 담당자 입력란에서 자동완성으로 검색됩니다.<br>
+                <span style="color:var(--text3);font-size:12px;">열 순서: A=이름, B=부서, C=직책 (첫 행은 헤더)</span>
+              </p>
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input class="form-control" type="text" id="emp-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" style="flex:1;">
+                <button class="btn btn-primary" id="btn-emp-load">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+                  불러오기
+                </button>
+              </div>
+              <div id="emp-error" style="display:none;padding:10px 14px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-sm);font-size:13px;color:var(--red);margin-bottom:12px;"></div>
+              <!-- 불러온 직원 목록 미리보기 -->
+              <div id="emp-preview" style="display:none;">
+                <div style="font-size:12px;color:var(--text3);margin-bottom:8px;" id="emp-preview-label"></div>
+                <div style="max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                  <table style="width:100%;font-size:12px;">
+                    <thead><tr>
+                      <th style="padding:8px 12px;background:var(--surface2);color:var(--text3);text-align:left;border-bottom:1px solid var(--border);">이름</th>
+                      <th style="padding:8px 12px;background:var(--surface2);color:var(--text3);text-align:left;border-bottom:1px solid var(--border);">부서</th>
+                      <th style="padding:8px 12px;background:var(--surface2);color:var(--text3);text-align:left;border-bottom:1px solid var(--border);">직책</th>
+                    </tr></thead>
+                    <tbody id="emp-preview-tbody"></tbody>
+                  </table>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:10px;">
+                  <button class="btn btn-primary" id="btn-emp-save">저장하기</button>
+                  <button class="btn btn-ghost" id="btn-emp-clear">연동 해제</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 자동 백업 현황 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">자동 백업 현황</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span id="backup-auto-status" style="font-size:12px;color:var(--text3);"></span>
+                <button class="btn btn-primary" id="btn-backup-now" style="font-size:12px;padding:5px 12px;">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+                  지금 백업
+                </button>
+              </div>
+            </div>
+            <div class="panel-body" style="padding:0;">
+              <div id="backup-list-empty" style="text-align:center;padding:32px;color:var(--text3);font-size:13px;">저장된 백업이 없습니다</div>
+              <table id="backup-table" style="width:100%;display:none;">
+                <thead><tr>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">백업 시점</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">자산 수</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">종류</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">작업</th>
+                </tr></thead>
+                <tbody id="backup-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 백업 파일 내보내기 -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">백업 파일 내보내기</span></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7;">현재 자산 데이터를 JSON 파일로 저장합니다. 다른 기기나 브라우저에서도 복원할 수 있어요.</p>
+              <button class="btn btn-ghost" id="btn-export-backup">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                백업 파일 다운로드 (.json)
+              </button>
+            </div>
+          </div>
+
+          <!-- 백업 파일 불러오기 -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">백업 파일로 복원</span></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7;">
+                이전에 저장한 백업 JSON 파일을 선택하면 해당 시점으로 복원됩니다.<br>
+                <span style="color:var(--red);font-size:12px;">⚠ 현재 데이터가 모두 백업 시점으로 교체됩니다.</span>
+              </p>
+              <div id="backup-drop-zone" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;">
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--text3);margin-bottom:8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size:13px;color:var(--text2);margin-bottom:4px;">백업 파일(.json)을 드래그하거나 클릭하여 선택</div>
+                <input type="file" id="backup-file-input" accept=".json" style="display:none;">
+              </div>
+            </div>
+          </div>
+
+          <!-- 자동 백업 설정 -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">자동 백업 설정</span></div>
+            <div class="panel-body" style="display:flex;align-items:center;gap:16px;">
+              <label style="font-size:13px;color:var(--text2);">백업 주기</label>
+              <select class="form-control" id="backup-interval-select" style="width:auto;">
+                <option value="5">5분마다</option>
+                <option value="10">10분마다</option>
+                <option value="30" selected>30분마다</option>
+                <option value="60">1시간마다</option>
+              </select>
+              <span id="backup-next-time" style="font-size:12px;color:var(--text3);"></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 계정 관리 (마스터 전용) -->
+      <div class="page" id="page-accounts">
+        <div style="max-width:640px;display:flex;flex-direction:column;gap:16px;">
+
+          <!-- 현재 계정 목록 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">관리자 계정 목록</span>
+              <button class="btn btn-primary" id="btn-add-account" style="font-size:12px;padding:5px 12px;">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                계정 추가
+              </button>
+            </div>
+            <div class="panel-body" style="padding:0;">
+              <table style="width:100%;">
+                <thead><tr>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">아이디</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">이름</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">권한</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">생성일</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);">관리</th>
+                </tr></thead>
+                <tbody id="accounts-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 안내 -->
+          <div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text3);line-height:1.7;">
+            <strong style="color:var(--text2);display:block;margin-bottom:6px;">계정 권한 안내</strong>
+            마스터 계정(buzzasset)은 삭제할 수 없으며 계정 관리 메뉴에 접근할 수 있습니다.<br>
+            추가 관리자 계정은 자산 등록·수정·삭제 등 모든 기능을 사용할 수 있지만 계정 관리는 불가합니다.
+          </div>
+
         </div>
       </div>
 
@@ -410,7 +721,13 @@ select.form-control{cursor:pointer;}
         <div class="form-group"><label class="form-label">시리얼번호</label><input class="form-control" type="text" id="m-serial"></div>
         <div class="form-group"><label class="form-label">상태</label><select class="form-control" id="m-status"><option>운용 중</option><option>유휴</option><option>점검 중</option><option>폐기 예정</option></select></div>
         <div class="form-group"><label class="form-label">위치</label><input class="form-control" type="text" id="m-location"></div>
-        <div class="form-group"><label class="form-label">담당자</label><input class="form-control" type="text" id="m-manager"></div>
+        <div class="form-group">
+  <label class="form-label">담당자</label>
+  <div class="ac-wrap">
+    <input class="form-control" type="text" id="m-manager" placeholder="이름으로 검색..." autocomplete="off">
+    <div class="ac-dropdown" id="m-manager-dropdown"></div>
+  </div>
+</div>
         <div class="form-group"><label class="form-label">취득일</label><input class="form-control" type="date" id="m-date"></div>
         <div class="form-group"><label class="form-label">취득 금액 (원)</label><input class="form-control" type="number" id="m-price"></div>
         <div class="form-group full"><label class="form-label">메모</label><textarea class="form-control" id="m-memo" rows="2" style="resize:vertical;"></textarea></div>
@@ -452,6 +769,38 @@ select.form-control{cursor:pointer;}
   </div>
 </div>
 
+<!-- 계정 추가/수정 모달 -->
+<div class="modal-overlay" id="modal-account">
+  <div class="modal modal-sm">
+    <div class="modal-header"><span class="modal-title" id="modal-account-title">계정 추가</span><button class="modal-close" data-close="modal-account">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group">
+          <label class="form-label">아이디 *</label>
+          <input class="form-control" type="text" id="acc-id" placeholder="영문, 숫자 조합">
+        </div>
+        <div class="form-group">
+          <label class="form-label">이름 *</label>
+          <input class="form-control" type="text" id="acc-name" placeholder="실명 입력">
+        </div>
+        <div class="form-group" id="acc-pw-group">
+          <label class="form-label">비밀번호 *</label>
+          <input class="form-control" type="password" id="acc-pw" placeholder="6자 이상">
+        </div>
+        <div class="form-group" id="acc-pw2-group">
+          <label class="form-label">비밀번호 확인 *</label>
+          <input class="form-control" type="password" id="acc-pw2" placeholder="비밀번호 재입력">
+        </div>
+        <div class="login-error" id="acc-error"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="modal-account">취소</button>
+      <button class="btn btn-primary" id="btn-acc-save">추가</button>
+    </div>
+  </div>
+</div>
+
 <!-- 비밀번호 변경 모달 -->
 <div class="modal-overlay" id="modal-pw">
   <div class="modal modal-sm">
@@ -481,11 +830,27 @@ select.form-control{cursor:pointer;}
 document.addEventListener('DOMContentLoaded', function() {
 
   // 계정
-  var ADMIN_ID = 'buzzasset';
-  var adminPw  = 'buzz260209';
+  var MASTER_ID  = 'buzzasset';
+  var MASTER_NAME = '마스터 관리자';
+  var adminPw    = 'buzz260209';
+  var LS_ACCOUNTS = 'ams_accounts';
+  var currentUser = null; // { id, name, isMaster }
 
-  // 데이터
-  var assets = [
+  // 추가 계정 관리
+  function getAccounts() {
+    try { return JSON.parse(localStorage.getItem(LS_ACCOUNTS) || '[]'); } catch(e) { return []; }
+  }
+  function saveAccounts(list) {
+    try { localStorage.setItem(LS_ACCOUNTS, JSON.stringify(list)); } catch(e) {}
+  }
+
+  // localStorage 키
+  var LS_ASSETS      = 'ams_assets';
+  var LS_MAINTENANCE = 'ams_maintenance';
+  var LS_IDCNT       = 'ams_idcnt';
+
+  // 샘플 데이터 (localStorage에 없을 때만 사용)
+  var SAMPLE_ASSETS = [
     { id:'IT-2025-001', name:'MacBook Pro 14인치', category:'IT장비', maker:'Apple', model:'MK183KH/A', serial:'C02X1234ABCD', status:'운용 중', location:'본사 3층 개발팀', manager:'김민준', date:'2025-03-10', price:2800000, memo:'개발팀 주력 노트북' },
     { id:'IT-2025-002', name:'Dell 모니터 27인치', category:'IT장비', maker:'Dell', model:'U2722D', serial:'CN-0D1234', status:'운용 중', location:'본사 3층 개발팀', manager:'박서연', date:'2025-02-15', price:650000, memo:'' },
     { id:'IT-2025-003', name:'HP LaserJet Pro', category:'사무기기', maker:'HP', model:'M404dw', serial:'PHBG123456', status:'점검 중', location:'본사 2층 총무팀', manager:'이수진', date:'2024-11-20', price:450000, memo:'토너 교체 예정' },
@@ -497,11 +862,41 @@ document.addEventListener('DOMContentLoaded', function() {
     { id:'IT-2025-006', name:'무선 AP Cisco', category:'IT장비', maker:'Cisco', model:'Catalyst 9120', serial:'FCW2345ABCD', status:'폐기 예정', location:'창고', manager:'', date:'2019-06-12', price:320000, memo:'노후 장비' }
   ];
 
-  var maintenance = [
+  var SAMPLE_MAINTENANCE = [
     { id:'WO-001', assetId:'IT-2025-003', assetName:'HP LaserJet Pro', type:'정기 점검', date:'2025-03-20', status:'진행 중', manager:'이수진', desc:'토너 잔량 확인 및 교체' },
     { id:'WO-002', assetId:'EQ-2025-001', assetName:'CNC 밀링머신 1호', type:'부품 교체', date:'2025-04-01', status:'예정', manager:'정대호', desc:'스핀들 베어링 교체' },
     { id:'WO-003', assetId:'EQ-2025-002', assetName:'지게차 3.5톤', type:'정기 점검', date:'2025-03-25', status:'예정', manager:'최성훈', desc:'분기 정기 점검' }
   ];
+
+  // localStorage에서 불러오기 (없으면 샘플 사용)
+  function loadFromStorage() {
+    try {
+      var a = localStorage.getItem(LS_ASSETS);
+      var m = localStorage.getItem(LS_MAINTENANCE);
+      var c = localStorage.getItem(LS_IDCNT);
+      if (a) assets = JSON.parse(a);
+      if (m) maintenance = JSON.parse(m);
+      if (c) idCnt = parseInt(c);
+    } catch(e) {}
+  }
+
+  // localStorage에 저장
+  function saveToStorage() {
+    try {
+      localStorage.setItem(LS_ASSETS, JSON.stringify(assets));
+      localStorage.setItem(LS_MAINTENANCE, JSON.stringify(maintenance));
+      localStorage.setItem(LS_IDCNT, String(idCnt));
+    } catch(e) {
+      toast('저장 실패: 브라우저 저장 공간이 부족합니다.', 'warn');
+    }
+  }
+
+  // 데이터 변경 시 자동 저장 래퍼
+  function saveAndRefresh() { saveToStorage(); renderTable(); }
+
+  // 데이터 초기화
+  var assets      = JSON.parse(JSON.stringify(SAMPLE_ASSETS));
+  var maintenance = JSON.parse(JSON.stringify(SAMPLE_MAINTENANCE));
 
   var activities = [
     { type:'green', text:'<strong>IT-2025-005 NAS DS920+</strong> 자산이 등록되었습니다', time:'오늘 09:21' },
@@ -514,21 +909,63 @@ document.addEventListener('DOMContentLoaded', function() {
   var idCnt = 10, curPage = 1, editId = null;
   var PAGE = 7;
 
+  // 시작 시 저장된 데이터 불러오기
+  loadFromStorage();
+
   // ── 로그인 ──
   function doLogin() {
-    var id = document.getElementById('login-id').value.trim();
-    var pw = document.getElementById('login-pw').value;
+    var id  = document.getElementById('login-id').value.trim();
+    var pw  = document.getElementById('login-pw').value;
     var err = document.getElementById('login-error');
-    if (id === ADMIN_ID && pw === adminPw) {
-      err.classList.remove('show');
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').classList.add('visible');
-      navigate('dashboard');
-      renderDashboard();
-      renderTable();
+    var matched = null;
+
+    // 빌트인 계정 목록 (코드에 고정된 계정)
+    var builtinAccounts = [
+      { id:'test01', pw:'test1234', name:'테스트 계정', isMaster:false }
+    ];
+
+    // 마스터 계정 확인
+    if (id === MASTER_ID && pw === adminPw) {
+      matched = { id: MASTER_ID, name: MASTER_NAME, isMaster: true };
     } else {
-      err.classList.add('show');
+      // 빌트인 계정 확인
+      var builtin = builtinAccounts.find(function(a) { return a.id === id && a.pw === pw; });
+      if (builtin) {
+        matched = { id: builtin.id, name: builtin.name, isMaster: false };
+      } else {
+        // localStorage 추가 계정 확인
+        var accounts = getAccounts();
+        var found = accounts.find(function(a) { return a.id === id && a.pw === pw; });
+        if (found) matched = { id: found.id, name: found.name, isMaster: false };
+      }
     }
+
+    if (!matched) { err.classList.add('show'); return; }
+    err.classList.remove('show');
+    currentUser = matched;
+
+    // 사이드바 표시 업데이트
+    document.getElementById('sb-username').textContent = matched.name;
+    document.getElementById('sb-userid').textContent   = matched.id;
+    var badge = document.getElementById('sb-badge');
+    if (matched.isMaster) {
+      badge.textContent = 'MASTER';
+      badge.style.background = 'rgba(108,99,255,0.2)';
+      badge.style.color = 'var(--accent2)';
+    } else {
+      badge.textContent = 'ADMIN';
+      badge.style.background = 'var(--surface3)';
+      badge.style.color = 'var(--text3)';
+    }
+
+    // 계정 관리 메뉴: 마스터만 표시
+    document.getElementById('nav-accounts').style.display = matched.isMaster ? '' : 'none';
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    navigate('dashboard');
+    renderDashboard();
+    renderTable();
   }
 
   document.getElementById('btn-login').addEventListener('click', doLogin);
@@ -543,7 +980,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ── 네비게이션 ──
-  var pageTitles = { dashboard:'대시보드', assets:'자산 목록', register:'자산 등록', maintenance:'유지보수', reports:'보고서' };
 
   function navigate(page) {
     document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
@@ -556,6 +992,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (page === 'assets')      renderTable();
     if (page === 'maintenance') renderMaintenance();
     if (page === 'reports')     renderReports();
+    if (page === 'backup')      renderBackupList();
+    if (page === 'accounts')    renderAccounts();
   }
 
   document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
@@ -759,6 +1197,7 @@ document.addEventListener('DOMContentLoaded', function() {
       toast(name + ' 자산이 등록되었습니다.');
     }
     document.getElementById('modal-asset').classList.remove('open');
+    saveToStorage();
     renderTable();
   });
 
@@ -783,6 +1222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var nid = pfx + '-' + new Date().getFullYear() + '-' + String(idCnt++).padStart(3,'0');
     assets.push(Object.assign({ id:nid }, data));
     activities.unshift({ type:'green', text:'<strong>' + nid + ' ' + name + '</strong> 자산이 등록되었습니다', time:'방금' });
+    saveToStorage();
     toast(name + ' 자산이 등록되었습니다. (' + nid + ')');
     clearRegForm();
     navigate('assets');
@@ -802,6 +1242,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!confirm('이 자산을 삭제하시겠습니까?')) return;
     var a = assets.find(function(x) { return x.id===id; });
     assets = assets.filter(function(x) { return x.id !== id; });
+    saveToStorage();
     document.getElementById('modal-detail').classList.remove('open');
     renderTable();
     toast((a ? a.name : '') + ' 자산이 삭제되었습니다.');
@@ -838,6 +1279,7 @@ document.addEventListener('DOMContentLoaded', function() {
       desc:document.getElementById('mt-desc').value
     });
     document.getElementById('modal-maint').classList.remove('open');
+    saveToStorage();
     renderMaintenance();
     toast('유지보수 작업이 등록되었습니다.');
   });
@@ -860,16 +1302,112 @@ document.addEventListener('DOMContentLoaded', function() {
     }).join('');
   }
 
-  document.getElementById('btn-csv').addEventListener('click', function() {
-    var h = ['자산번호','자산명','카테고리','제조사','모델','시리얼번호','상태','위치','담당자','취득일','취득금액','메모'];
-    var r = assets.map(function(a) {
-      return [a.id,a.name,a.category,a.maker,a.model,a.serial,a.status,a.location,a.manager,a.date,a.price,a.memo].map(function(v) { return '"'+(v||'')+'"'; }).join(',');
+  // ── 내보내기 공통 ──
+  var HEADERS = ['자산번호','자산명','카테고리','제조사','모델명','시리얼번호','상태','위치','담당자','취득일','취득금액','메모'];
+  var FIELDS  = ['id','name','category','maker','model','serial','status','location','manager','date','price','memo'];
+
+  function getExportData() {
+    // 현재 필터 적용 데이터 전체 (페이지 구분 없이)
+    var q  = (document.getElementById('search-input').value || '').toLowerCase();
+    var st = document.getElementById('status-filter').value;
+    var ct = document.getElementById('category-filter').value;
+    return assets.filter(function(a) {
+      return (!q  || a.name.toLowerCase().indexOf(q) > -1 || a.id.toLowerCase().indexOf(q) > -1) &&
+             (!st || a.status === st) && (!ct || a.category === ct);
     });
-    var csv = '\uFEFF' + [h.join(',')].concat(r).join('\n');
-    var blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  }
+
+  function makeCSVText(data) {
+    var rows = data.map(function(a) {
+      return FIELDS.map(function(f) { return '"' + (a[f] || '').toString().replace(/"/g, '""') + '"'; }).join(',');
+    });
+    return '\uFEFF' + [HEADERS.join(',')].concat(rows).join('\n');
+  }
+
+  function downloadCSV(data, filename) {
+    var blob = new Blob([makeCSVText(data)], { type:'text/csv;charset=utf-8;' });
     var url  = URL.createObjectURL(blob);
-    var el   = document.createElement('a'); el.href=url; el.download='자산목록.csv'; el.click();
+    var el   = document.createElement('a'); el.href = url; el.download = filename; el.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadXLSX(data, filename) {
+    // SheetJS 없이 순수 JS로 간단한 .xlsx 생성 (XML 기반)
+    // 대신 TSV를 .xls(XML Spreadsheet) 형태로 저장 — 엑셀에서 바로 열림
+    var rows = [HEADERS].concat(data.map(function(a) {
+      return FIELDS.map(function(f) { return (a[f] || '').toString(); });
+    }));
+    var xml = '<?xml version="1.0"?>\n' +
+      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ' +
+      'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+      '<Worksheet ss:Name="자산목록"><Table>\n' +
+      rows.map(function(row) {
+        return '<Row>' + row.map(function(cell) {
+          var t = isNaN(cell) || cell === '' ? 'String' : 'Number';
+          return '<Cell><Data ss:Type="' + t + '">' + cell.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</Data></Cell>';
+        }).join('') + '</Row>';
+      }).join('\n') +
+      '\n</Table></Worksheet></Workbook>';
+    var blob = new Blob([xml], { type:'application/vnd.ms-excel;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var el   = document.createElement('a'); el.href = url; el.download = filename; el.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function openInSheets(data) {
+    // CSV 데이터를 data URI로 만들어 Google Sheets 가져오기 URL로 열기
+    var csv = makeCSVText(data);
+    // Google Sheets는 외부 URL 가져오기만 지원하므로, 대신 CSV를 클립보드에 복사 후 안내
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      var tsv = [HEADERS].concat(data.map(function(a) {
+        return FIELDS.map(function(f) { return (a[f] || '').toString(); });
+      })).map(function(r) { return r.join('\t'); }).join('\n');
+      navigator.clipboard.writeText(tsv).then(function() {
+        toast('데이터가 클립보드에 복사되었습니다. Google Sheets에서 붙여넣기(Ctrl+V) 하세요.');
+        window.open('https://sheets.new', '_blank');
+      });
+    } else {
+      toast('Google Sheets로 이동합니다. CSV를 다운로드 후 가져오기 하세요.');
+      downloadCSV(data, '자산목록.csv');
+      setTimeout(function() { window.open('https://sheets.new', '_blank'); }, 500);
+    }
+  }
+
+  // 자산 목록 툴바 드롭다운
+  var exportToggle  = document.getElementById('btn-export-toggle');
+  var exportDropdown = document.getElementById('export-dropdown');
+  exportToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    exportDropdown.style.display = exportDropdown.style.display === 'none' ? 'block' : 'none';
+  });
+  document.addEventListener('click', function() { exportDropdown.style.display = 'none'; });
+
+  document.getElementById('btn-dl-csv').addEventListener('click', function() {
+    downloadCSV(getExportData(), '자산목록.csv');
     toast('CSV 파일이 다운로드되었습니다.');
+    exportDropdown.style.display = 'none';
+  });
+  document.getElementById('btn-dl-xlsx').addEventListener('click', function() {
+    downloadXLSX(getExportData(), '자산목록.xls');
+    toast('Excel 파일이 다운로드되었습니다.');
+    exportDropdown.style.display = 'none';
+  });
+  document.getElementById('btn-open-sheets').addEventListener('click', function() {
+    openInSheets(getExportData());
+    exportDropdown.style.display = 'none';
+  });
+
+  // 보고서 페이지 버튼
+  document.getElementById('btn-csv').addEventListener('click', function() {
+    downloadCSV(assets, '자산목록_전체.csv');
+    toast('CSV 파일이 다운로드되었습니다.');
+  });
+  document.getElementById('btn-xlsx').addEventListener('click', function() {
+    downloadXLSX(assets, '자산목록_전체.xls');
+    toast('Excel 파일이 다운로드되었습니다.');
+  });
+  document.getElementById('btn-sheets').addEventListener('click', function() {
+    openInSheets(assets);
   });
 
   // ── 비밀번호 변경 ──
@@ -891,6 +1429,673 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-pw').classList.remove('open');
     toast('비밀번호가 변경되었습니다.');
   });
+
+  // ── 일괄 등록 ──
+  var bulkData = [];
+
+  // CSV 파싱 함수
+  function parseCSV(text) {
+    var lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    // 헤더 행 건너뛰기 (첫 행이 숫자가 아니면 헤더로 간주)
+    var startIdx = 0;
+    var firstCell = lines[0].split(',')[0].replace(/"/g,'').trim();
+    if (isNaN(firstCell) && firstCell !== '') startIdx = 1;
+
+    var result = [];
+    for (var i = startIdx; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      // 쉼표 구분 (따옴표 내 쉼표 처리)
+      var cols = [];
+      var cur = '', inQ = false;
+      for (var c = 0; c < line.length; c++) {
+        var ch = line[c];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      cols.push(cur.trim());
+      if (!cols[0]) continue; // 자산명 없으면 skip
+      result.push({
+        name:     cols[0] || '',
+        category: cols[1] || 'IT장비',
+        maker:    cols[2] || '',
+        model:    cols[3] || '',
+        serial:   cols[4] || '',
+        status:   cols[5] || '운용 중',
+        location: cols[6] || '',
+        manager:  cols[7] || '',
+        date:     cols[8] || '',
+        price:    cols[9] || '',
+        memo:     cols[10] || ''
+      });
+    }
+    return result;
+  }
+
+  function showPreview(data) {
+    bulkData = data;
+    var valid = data.filter(function(r) { return r.name && r.category; });
+    var invalid = data.length - valid.length;
+
+    document.getElementById('preview-count').textContent =
+      valid.length + '개 등록 예정' + (invalid > 0 ? ' / ' + invalid + '개 오류(자산명 또는 카테고리 없음)' : '');
+
+    var heads = ['자산명','카테고리','제조사','모델명','시리얼번호','상태','위치','담당자','취득일','취득금액','메모'];
+    document.getElementById('preview-head').innerHTML = heads.map(function(h) {
+      return '<th style="padding:10px 12px;background:var(--surface2);color:var(--text3);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;">' + h + '</th>';
+    }).join('');
+
+    document.getElementById('preview-tbody').innerHTML = data.map(function(r, i) {
+      var ok = r.name && r.category;
+      var bg = ok ? '' : 'background:var(--red-dim);';
+      return '<tr style="' + bg + '">' +
+        [r.name,r.category,r.maker,r.model,r.serial,r.status,r.location,r.manager,r.date,r.price,r.memo].map(function(v) {
+          return '<td style="padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);">' + (v || '-') + '</td>';
+        }).join('') + '</tr>';
+    }).join('');
+
+    document.getElementById('preview-panel').style.display = 'block';
+    document.getElementById('preview-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  // Google Sheets 불러오기
+  document.getElementById('btn-sheets-load').addEventListener('click', function() {
+    var url = document.getElementById('sheets-url').value.trim();
+    var errEl = document.getElementById('sheets-error');
+    errEl.style.display = 'none';
+
+    if (!url) { errEl.textContent = 'URL을 입력해 주세요.'; errEl.style.display = 'block'; return; }
+
+    // Google Sheets URL을 CSV export URL로 변환
+    var csvUrl = url;
+    if (url.indexOf('docs.google.com/spreadsheets') > -1 && url.indexOf('output=csv') === -1) {
+      // /edit 또는 /pub URL을 CSV pub URL로 변환
+      var idMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (idMatch) {
+        var gidMatch = url.match(/gid=([0-9]+)/);
+        var gid = gidMatch ? gidMatch[1] : '0';
+        csvUrl = 'https://docs.google.com/spreadsheets/d/' + idMatch[1] + '/export?format=csv&gid=' + gid;
+      }
+    }
+
+    var btn = document.getElementById('btn-sheets-load');
+    btn.textContent = '불러오는 중...';
+    btn.disabled = true;
+
+    fetch(csvUrl)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(text) {
+        var data = parseCSV(text);
+        if (data.length === 0) throw new Error('데이터가 없거나 형식이 맞지 않습니다.');
+        showPreview(data);
+        btn.textContent = '불러오기';
+        btn.disabled = false;
+      })
+      .catch(function(err) {
+        errEl.textContent = '불러오기 실패: ' + err.message + '\n시트가 웹에 공개(CSV)로 게시되어 있는지 확인해 주세요.';
+        errEl.style.display = 'block';
+        btn.textContent = '불러오기';
+        btn.disabled = false;
+      });
+  });
+
+  // CSV 파일 업로드
+  var dropZone = document.getElementById('drop-zone');
+  var fileInput = document.getElementById('csv-file-input');
+
+  dropZone.addEventListener('click', function() { fileInput.click(); });
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--accent)';
+    dropZone.style.background = 'var(--accent-dim)';
+  });
+  dropZone.addEventListener('dragleave', function() {
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+  });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+    var file = e.dataTransfer.files[0];
+    if (file) readCSVFile(file);
+  });
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files[0]) readCSVFile(fileInput.files[0]);
+  });
+
+  function readCSVFile(file) {
+    if (!file.name.endsWith('.csv')) {
+      toast('CSV 파일만 업로드 가능합니다.', 'warn');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var data = parseCSV(e.target.result);
+      if (data.length === 0) { toast('데이터가 없거나 형식이 맞지 않습니다.', 'warn'); return; }
+      showPreview(data);
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  // 미리보기 취소
+  document.getElementById('btn-preview-cancel').addEventListener('click', function() {
+    document.getElementById('preview-panel').style.display = 'none';
+    bulkData = [];
+  });
+
+  // 일괄 등록 확정
+  document.getElementById('btn-preview-confirm').addEventListener('click', function() {
+    var valid = bulkData.filter(function(r) { return r.name && r.category; });
+    if (valid.length === 0) { toast('등록 가능한 데이터가 없습니다.', 'warn'); return; }
+
+    valid.forEach(function(r) {
+      var pfx = r.category === 'IT장비' ? 'IT' : r.category === '생산설비' ? 'EQ' : r.category === '차량' ? 'VH' : 'EQ';
+      var nid = pfx + '-' + new Date().getFullYear() + '-' + String(idCnt++).padStart(3, '0');
+      assets.push({
+        id: nid, name: r.name, category: r.category,
+        maker: r.maker, model: r.model, serial: r.serial,
+        status: r.status || '운용 중',
+        location: r.location, manager: r.manager,
+        date: r.date, price: r.price, memo: r.memo
+      });
+    });
+
+    activities.unshift({
+      type: 'green',
+      text: '<strong>' + valid.length + '개 자산</strong>이 일괄 등록되었습니다',
+      time: '방금'
+    });
+
+    saveToStorage();
+    document.getElementById('preview-panel').style.display = 'none';
+    document.getElementById('sheets-url').value = '';
+    fileInput.value = '';
+    bulkData = [];
+
+    toast(valid.length + '개 자산이 일괄 등록되었습니다.');
+    navigate('assets');
+  });
+
+  // ── 계정 관리 (마스터 전용) ──
+  var pageTitles = { dashboard:'대시보드', assets:'자산 목록', register:'자산 등록', bulk:'일괄 등록', maintenance:'유지보수', reports:'보고서', backup:'백업 / 복원', accounts:'계정 관리' };
+
+  function renderAccounts() {
+    var accounts = getAccounts();
+    var now = new Date();
+    var masterRow = '<tr>' +
+      '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px;color:var(--text);">' + MASTER_ID + '</td>' +
+      '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);">' + MASTER_NAME + '</td>' +
+      '<td style="padding:12px 16px;border-bottom:1px solid var(--border);"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px;background:rgba(108,99,255,0.2);color:var(--accent2);">MASTER</span></td>' +
+      '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);">-</td>' +
+      '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);">삭제 불가</td>' +
+      '</tr>';
+
+    var addedRows = accounts.map(function(a) {
+      return '<tr>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px;color:var(--text);">' + a.id + '</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);">' + a.name + '</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);"><span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px;background:var(--surface3);color:var(--text3);">ADMIN</span></td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);">' + (a.createdAt || '-') + '</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);">' +
+          '<div style="display:flex;gap:6px;">' +
+            '<button class="action-btn acc-pw-btn" data-id="' + a.id + '">비번 변경</button>' +
+            '<button class="action-btn acc-del-btn" data-id="' + a.id + '" style="color:var(--red);">삭제</button>' +
+          '</div>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    document.getElementById('accounts-tbody').innerHTML = masterRow + addedRows;
+
+    // 이벤트 바인딩
+    document.querySelectorAll('.acc-del-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.dataset.id;
+        if (!confirm(targetId + ' 계정을 삭제하시겠습니까?')) return;
+        var list = getAccounts().filter(function(a) { return a.id !== targetId; });
+        saveAccounts(list);
+        renderAccounts();
+        toast(targetId + ' 계정이 삭제되었습니다.');
+      });
+    });
+
+    document.querySelectorAll('.acc-pw-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        openAccountModal('pw', btn.dataset.id);
+      });
+    });
+  }
+
+  // 계정 추가/비번변경 모달
+  var accEditMode = 'add'; // 'add' | 'pw'
+  var accEditTargetId = null;
+
+  document.getElementById('btn-add-account').addEventListener('click', function() {
+    openAccountModal('add');
+  });
+
+  function openAccountModal(mode, targetId) {
+    accEditMode = mode;
+    accEditTargetId = targetId || null;
+    var err = document.getElementById('acc-error');
+    err.classList.remove('show');
+    ['acc-id','acc-name','acc-pw','acc-pw2'].forEach(function(f) { document.getElementById(f).value = ''; });
+
+    if (mode === 'add') {
+      document.getElementById('modal-account-title').textContent = '계정 추가';
+      document.getElementById('btn-acc-save').textContent = '추가';
+      document.getElementById('acc-id').disabled = false;
+      document.getElementById('acc-name').disabled = false;
+      document.getElementById('acc-pw-group').style.display = '';
+      document.getElementById('acc-pw2-group').style.display = '';
+    } else {
+      document.getElementById('modal-account-title').textContent = targetId + ' 비밀번호 변경';
+      document.getElementById('btn-acc-save').textContent = '변경';
+      document.getElementById('acc-id').disabled = true;
+      document.getElementById('acc-id').value = targetId;
+      document.getElementById('acc-name').disabled = true;
+      document.getElementById('acc-pw-group').style.display = '';
+      document.getElementById('acc-pw2-group').style.display = '';
+    }
+    document.getElementById('modal-account').classList.add('open');
+  }
+
+  document.getElementById('btn-acc-save').addEventListener('click', function() {
+    var err = document.getElementById('acc-error');
+    err.classList.remove('show');
+
+    if (accEditMode === 'add') {
+      var newId   = document.getElementById('acc-id').value.trim();
+      var newName = document.getElementById('acc-name').value.trim();
+      var newPw   = document.getElementById('acc-pw').value;
+      var newPw2  = document.getElementById('acc-pw2').value;
+
+      if (!newId || !newName) { err.textContent = '아이디와 이름은 필수입니다.'; err.classList.add('show'); return; }
+      if (newId === MASTER_ID) { err.textContent = '이미 사용 중인 아이디입니다.'; err.classList.add('show'); return; }
+      if (newPw.length < 6) { err.textContent = '비밀번호는 6자 이상이어야 합니다.'; err.classList.add('show'); return; }
+      if (newPw !== newPw2) { err.textContent = '비밀번호가 일치하지 않습니다.'; err.classList.add('show'); return; }
+
+      var list = getAccounts();
+      if (list.find(function(a) { return a.id === newId; })) {
+        err.textContent = '이미 사용 중인 아이디입니다.'; err.classList.add('show'); return;
+      }
+
+      var now = new Date();
+      var createdAt = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
+      list.push({ id: newId, name: newName, pw: newPw, createdAt: createdAt });
+      saveAccounts(list);
+      document.getElementById('modal-account').classList.remove('open');
+      renderAccounts();
+      toast(newName + '(' + newId + ') 계정이 추가되었습니다.');
+
+    } else {
+      // 비밀번호 변경
+      var chgPw  = document.getElementById('acc-pw').value;
+      var chgPw2 = document.getElementById('acc-pw2').value;
+      if (chgPw.length < 6) { err.textContent = '비밀번호는 6자 이상이어야 합니다.'; err.classList.add('show'); return; }
+      if (chgPw !== chgPw2) { err.textContent = '비밀번호가 일치하지 않습니다.'; err.classList.add('show'); return; }
+
+      var list = getAccounts();
+      var idx = list.findIndex(function(a) { return a.id === accEditTargetId; });
+      if (idx > -1) { list[idx].pw = chgPw; saveAccounts(list); }
+      document.getElementById('modal-account').classList.remove('open');
+      renderAccounts();
+      toast(accEditTargetId + ' 계정의 비밀번호가 변경되었습니다.');
+    }
+  });
+
+  // ── 임직원 명단 연동 ──
+  var LS_EMP_URL  = 'ams_emp_url';
+  var LS_EMP_DATA = 'ams_emp_data';
+  var employees   = []; // { name, dept, title }
+
+  function loadEmployees() {
+    try {
+      var saved = localStorage.getItem(LS_EMP_DATA);
+      if (saved) {
+        employees = JSON.parse(saved);
+        updateEmpStatus();
+      }
+      var url = localStorage.getItem(LS_EMP_URL);
+      if (url) document.getElementById('emp-sheet-url').value = url;
+    } catch(e) {}
+  }
+
+  function updateEmpStatus() {
+    var el = document.getElementById('emp-status');
+    if (el) el.textContent = employees.length > 0 ? '임직원 ' + employees.length + '명 연동됨' : '';
+    // 미리보기 업데이트
+    if (employees.length > 0) {
+      document.getElementById('emp-preview').style.display = 'block';
+      document.getElementById('emp-preview-label').textContent = '총 ' + employees.length + '명 · 마지막 업데이트: ' + (localStorage.getItem('ams_emp_updated') || '알 수 없음');
+      document.getElementById('emp-preview-tbody').innerHTML = employees.map(function(e) {
+        return '<tr><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);">' + e.name +
+          '</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text2);">' + (e.dept || '-') +
+          '</td><td style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text3);">' + (e.title || '-') + '</td></tr>';
+      }).join('');
+    } else {
+      document.getElementById('emp-preview').style.display = 'none';
+    }
+  }
+
+  function parseEmployeeCSV(text) {
+    var lines = text.trim().split('\n');
+    var startIdx = 0;
+    var first = lines[0].split(',')[0].replace(/"/g,'').trim();
+    if (isNaN(first) && first !== '') startIdx = 1;
+    var result = [];
+    for (var i = startIdx; i < lines.length; i++) {
+      var cols = lines[i].split(',').map(function(c) { return c.replace(/"/g,'').trim(); });
+      if (!cols[0]) continue;
+      result.push({ name: cols[0], dept: cols[1] || '', title: cols[2] || '' });
+    }
+    return result;
+  }
+
+  // 불러오기 버튼
+  document.getElementById('btn-emp-load').addEventListener('click', function() {
+    var url = document.getElementById('emp-sheet-url').value.trim();
+    var errEl = document.getElementById('emp-error');
+    errEl.style.display = 'none';
+    if (!url) { errEl.textContent = 'URL을 입력해 주세요.'; errEl.style.display = 'block'; return; }
+
+    var csvUrl = url;
+    if (url.indexOf('docs.google.com/spreadsheets') > -1 && url.indexOf('output=csv') === -1) {
+      var idMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (idMatch) {
+        var gidMatch = url.match(/gid=([0-9]+)/);
+        csvUrl = 'https://docs.google.com/spreadsheets/d/' + idMatch[1] + '/export?format=csv&gid=' + (gidMatch ? gidMatch[1] : '0');
+      }
+    }
+    var btn = document.getElementById('btn-emp-load');
+    btn.textContent = '불러오는 중...'; btn.disabled = true;
+
+    fetch(csvUrl)
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function(text) {
+        var data = parseEmployeeCSV(text);
+        if (!data.length) throw new Error('데이터가 없거나 형식이 맞지 않습니다.');
+        employees = data;
+        updateEmpStatus();
+        btn.textContent = '불러오기'; btn.disabled = false;
+        toast(data.length + '명의 임직원 명단을 불러왔습니다. 저장하기를 눌러 적용하세요.');
+      })
+      .catch(function(err) {
+        errEl.textContent = '불러오기 실패: ' + err.message; errEl.style.display = 'block';
+        btn.textContent = '불러오기'; btn.disabled = false;
+      });
+  });
+
+  // 저장하기 버튼
+  document.getElementById('btn-emp-save').addEventListener('click', function() {
+    try {
+      var url = document.getElementById('emp-sheet-url').value.trim();
+      localStorage.setItem(LS_EMP_DATA, JSON.stringify(employees));
+      localStorage.setItem(LS_EMP_URL, url);
+      var now = new Date();
+      localStorage.setItem('ams_emp_updated', now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0'));
+      updateEmpStatus();
+      toast('임직원 명단이 저장되었습니다. (' + employees.length + '명)');
+    } catch(e) { toast('저장 실패', 'warn'); }
+  });
+
+  // 연동 해제
+  document.getElementById('btn-emp-clear').addEventListener('click', function() {
+    if (!confirm('임직원 명단 연동을 해제하시겠습니까?')) return;
+    employees = [];
+    localStorage.removeItem(LS_EMP_DATA);
+    localStorage.removeItem(LS_EMP_URL);
+    localStorage.removeItem('ams_emp_updated');
+    document.getElementById('emp-sheet-url').value = '';
+    updateEmpStatus();
+    toast('임직원 명단 연동이 해제되었습니다.');
+  });
+
+  // ── 담당자 자동완성 ──
+  function setupManagerAC(inputId, dropdownId) {
+    var input = document.getElementById(inputId);
+    var dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+
+    var selIdx = -1;
+
+    function getFiltered(q) {
+      if (!employees.length) return [];
+      var lq = q.toLowerCase();
+      return employees.filter(function(e) {
+        return e.name.toLowerCase().indexOf(lq) > -1 ||
+               (e.dept && e.dept.toLowerCase().indexOf(lq) > -1);
+      }).slice(0, 8);
+    }
+
+    function renderDropdown(q) {
+      var results = getFiltered(q);
+      selIdx = -1;
+      if (!q || !employees.length) { dropdown.classList.remove('open'); return; }
+      if (!results.length) {
+        dropdown.innerHTML = '<div class="ac-empty">검색 결과가 없습니다</div>';
+      } else {
+        dropdown.innerHTML = results.map(function(e, i) {
+          return '<div class="ac-item" data-idx="' + i + '" data-name="' + e.name + '">' +
+            '<div class="ac-item-name">' + e.name + '</div>' +
+            '<div class="ac-item-sub">' + (e.dept || '') + (e.title ? ' · ' + e.title : '') + '</div>' +
+            '</div>';
+        }).join('');
+        dropdown.querySelectorAll('.ac-item').forEach(function(item) {
+          item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            input.value = item.dataset.name;
+            dropdown.classList.remove('open');
+          });
+        });
+      }
+      dropdown.classList.add('open');
+    }
+
+    input.addEventListener('input', function() { renderDropdown(input.value.trim()); });
+    input.addEventListener('focus', function() { if (input.value.trim()) renderDropdown(input.value.trim()); });
+    input.addEventListener('blur',  function() { setTimeout(function() { dropdown.classList.remove('open'); }, 150); });
+
+    input.addEventListener('keydown', function(e) {
+      var items = dropdown.querySelectorAll('.ac-item');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selIdx = Math.min(selIdx + 1, items.length - 1);
+        items.forEach(function(it, i) { it.classList.toggle('selected', i === selIdx); });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selIdx = Math.max(selIdx - 1, 0);
+        items.forEach(function(it, i) { it.classList.toggle('selected', i === selIdx); });
+      } else if (e.key === 'Enter' && selIdx > -1) {
+        e.preventDefault();
+        input.value = items[selIdx].dataset.name;
+        dropdown.classList.remove('open');
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+  }
+
+  // 자동완성 초기화 (등록 페이지 + 수정 모달)
+  setupManagerAC('r-manager', 'r-manager-dropdown');
+  setupManagerAC('m-manager', 'm-manager-dropdown');
+
+  // 임직원 데이터 로드
+  loadEmployees();
+  var BACKUP_KEY = 'ams_backups';
+  var MAX_BACKUPS = 10;
+  var backupScheduleTimer = null;
+
+  function getBackups() {
+    try { return JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function saveBackups(list) {
+    try { localStorage.setItem(BACKUP_KEY, JSON.stringify(list)); } catch(e) {
+      toast('백업 저장 실패: 브라우저 저장 공간이 부족합니다.', 'warn');
+    }
+  }
+
+  function createBackup(type) {
+    var now = new Date();
+    var label = now.getFullYear() + '.' +
+      String(now.getMonth()+1).padStart(2,'0') + '.' +
+      String(now.getDate()).padStart(2,'0') + ' ' +
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+    var list = getBackups();
+    list.unshift({ ts: now.getTime(), label: label, type: type || '수동', assetCount: assets.length, data: JSON.parse(JSON.stringify(assets)) });
+    if (list.length > MAX_BACKUPS) list = list.slice(0, MAX_BACKUPS);
+    saveBackups(list);
+    renderBackupList();
+    updateNextBackupTime();
+    return label;
+  }
+
+  function renderBackupList() {
+    var list = getBackups();
+    var tbody = document.getElementById('backup-tbody');
+    var empty = document.getElementById('backup-list-empty');
+    var table = document.getElementById('backup-table');
+    if (!list.length) { empty.style.display='block'; table.style.display='none'; return; }
+    empty.style.display = 'none'; table.style.display = 'table';
+    tbody.innerHTML = list.map(function(b, i) {
+      var isLatest = i === 0;
+      return '<tr>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-family:var(--mono);color:var(--text);">' +
+          b.label + (isLatest ? ' <span style="font-size:10px;background:var(--green-dim);color:var(--green);padding:1px 6px;border-radius:8px;font-family:var(--font);">최신</span>' : '') +
+        '</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);">' + b.assetCount + '개</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text3);">' + (b.type || '수동') + '</td>' +
+        '<td style="padding:12px 16px;border-bottom:1px solid var(--border);">' +
+          '<div style="display:flex;gap:6px;">' +
+            '<button class="action-btn restore-btn" data-idx="' + i + '">복원</button>' +
+            '<button class="action-btn delete-backup-btn" data-idx="' + i + '" style="color:var(--red);">삭제</button>' +
+          '</div>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    document.querySelectorAll('.restore-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.dataset.idx);
+        var list = getBackups();
+        var b = list[idx];
+        if (!b) return;
+        if (!confirm(b.label + ' 시점으로 복원하시겠습니까?\n현재 자산 데이터(' + assets.length + '개)가 백업 데이터(' + b.assetCount + '개)로 교체됩니다.')) return;
+        // 복원 전 현재 상태 자동 백업
+        createBackup('복원 전 자동저장');
+        assets = JSON.parse(JSON.stringify(b.data));
+        renderTable();
+        renderDashboard();
+        toast(b.label + ' 시점으로 복원되었습니다.');
+        renderBackupList();
+      });
+    });
+
+    document.querySelectorAll('.delete-backup-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.dataset.idx);
+        var list = getBackups();
+        if (!confirm('이 백업을 삭제하시겠습니까?')) return;
+        list.splice(idx, 1);
+        saveBackups(list);
+        renderBackupList();
+        toast('백업이 삭제되었습니다.');
+      });
+    });
+  }
+
+  function updateNextBackupTime() {
+    var now = new Date();
+    var next = new Date();
+    next.setHours(23, 50, 0, 0);
+    if (now >= next) next.setDate(next.getDate() + 1);
+    var diff = next - now;
+    var h = Math.floor(diff / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var el = document.getElementById('backup-next-time');
+    if (el) el.textContent = '다음 자동 백업: ' + (h > 0 ? h + '시간 ' : '') + m + '분 후 (매일 23:50)';
+    var statusEl = document.getElementById('backup-auto-status');
+    if (statusEl) statusEl.textContent = '자동 백업 켜짐 · 매일 23:50';
+    return diff;
+  }
+
+  function startDailyBackup() {
+    if (backupScheduleTimer) clearTimeout(backupScheduleTimer);
+    var diff = updateNextBackupTime();
+    backupScheduleTimer = setTimeout(function() {
+      createBackup('자동 (23:50)');
+      toast('자동 백업이 저장되었습니다. (23:50)');
+      startDailyBackup(); // 다음 날 재등록
+    }, diff);
+    // 1분마다 카운트다운 업데이트
+    setInterval(updateNextBackupTime, 60000);
+  }
+
+  // 지금 백업 버튼
+  document.getElementById('btn-backup-now').addEventListener('click', function() {
+    var label = createBackup('수동');
+    toast(label + ' 백업이 저장되었습니다.');
+  });
+
+  // 백업 파일 내보내기
+  document.getElementById('btn-export-backup').addEventListener('click', function() {
+    var now = new Date();
+    var fname = 'AMS_backup_' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '_' + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + '.json';
+    var payload = { exportedAt: now.toISOString(), assetCount: assets.length, assets: assets, maintenance: maintenance };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+    var url  = URL.createObjectURL(blob);
+    var el   = document.createElement('a'); el.href=url; el.download=fname; el.click();
+    URL.revokeObjectURL(url);
+    toast('백업 파일이 다운로드되었습니다.');
+  });
+
+  // 백업 파일 불러오기
+  var backupDropZone = document.getElementById('backup-drop-zone');
+  var backupFileInput = document.getElementById('backup-file-input');
+  backupDropZone.addEventListener('click', function() { backupFileInput.click(); });
+  backupDropZone.addEventListener('dragover', function(e) { e.preventDefault(); backupDropZone.style.borderColor='var(--accent)'; backupDropZone.style.background='var(--accent-dim)'; });
+  backupDropZone.addEventListener('dragleave', function() { backupDropZone.style.borderColor=''; backupDropZone.style.background=''; });
+  backupDropZone.addEventListener('drop', function(e) {
+    e.preventDefault(); backupDropZone.style.borderColor=''; backupDropZone.style.background='';
+    if (e.dataTransfer.files[0]) readBackupFile(e.dataTransfer.files[0]);
+  });
+  backupFileInput.addEventListener('change', function() { if (backupFileInput.files[0]) readBackupFile(backupFileInput.files[0]); });
+
+  function readBackupFile(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var payload = JSON.parse(e.target.result);
+        if (!payload.assets || !Array.isArray(payload.assets)) throw new Error('올바른 백업 파일이 아닙니다.');
+        if (!confirm('백업 파일(' + payload.assetCount + '개 자산, ' + (payload.exportedAt || '날짜 미상') + ')으로 복원하시겠습니까?\n현재 데이터가 교체됩니다.')) return;
+        createBackup('파일 복원 전 자동저장');
+        assets = payload.assets;
+        if (payload.maintenance) maintenance = payload.maintenance;
+        saveToStorage();
+        renderTable(); renderDashboard();
+        toast('백업 파일로 복원되었습니다. (' + assets.length + '개 자산)');
+      } catch(err) {
+        toast('파일 읽기 실패: ' + err.message, 'warn');
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  // 백업 주기 설정 UI 숨기기 (매일 23:50 고정)
+  var intervalPanel = document.getElementById('backup-interval-select');
+  if (intervalPanel) intervalPanel.closest('.panel').style.display = 'none';
+
+  // 자동 백업 시작 (매일 23:50)
+  startDailyBackup();
 
   // ── 토스트 ──
   function toast(msg, type) {
